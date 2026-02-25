@@ -1,5 +1,5 @@
 import { useRouterState } from '@tanstack/react-router'
-import { Button } from '@heroui/react'
+import { Button, Select, ListBox } from '@heroui/react'
 import { Menu } from 'lucide-react'
 import { useStore } from '@tanstack/react-store'
 import { NAV_ITEMS } from '../config/nav'
@@ -46,19 +46,27 @@ export function Topbar({ onMenuClick }: TopbarProps) {
       {/* Account selector — desktop only */}
       {accounts.length > 0 && (
         <div className="hidden md:block">
-          <select
-            className="border border-divider rounded-lg bg-background text-foreground text-xs px-2.5 py-1.5 focus:outline-none focus:ring-2 focus:ring-primary/40 appearance-none w-44"
+          <Select
             aria-label="Select account"
-            value={accountId ?? ''}
-            onChange={(e) => selectAccount(e.target.value || null)}
+            selectedKey={accountId ?? 'all'}
+            onSelectionChange={(key) => selectAccount(key === 'all' ? null : (key as string))}
+            className="w-44"
           >
-            <option value="">All accounts</option>
-            {accounts.map((acc) => (
-              <option key={acc.id} value={acc.id}>
-                {acc.name}
-              </option>
-            ))}
-          </select>
+            <Select.Trigger>
+              <Select.Value />
+              <Select.Indicator />
+            </Select.Trigger>
+            <Select.Popover>
+              <ListBox>
+                <ListBox.Item id="all">All accounts</ListBox.Item>
+                {accounts.map((acc) => (
+                  <ListBox.Item key={acc.id} id={acc.id}>
+                    {acc.name}
+                  </ListBox.Item>
+                ))}
+              </ListBox>
+            </Select.Popover>
+          </Select>
         </div>
       )}
     </header>
