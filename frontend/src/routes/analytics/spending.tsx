@@ -6,7 +6,10 @@ import { ResponsiveBar } from '@nivo/bar'
 import { ResponsiveTreeMap } from '@nivo/treemap'
 import { TrendingUp, TrendingDown, Minus } from 'lucide-react'
 import { useSpendingByCategory } from '../../queries/useAnalytics'
-import { useBudgets, useBudgetVsActual } from '../../queries/useBudget'
+import { useBudgetVsActual } from '../../queries/useBudget'
+import { useStore } from '@tanstack/react-store'
+import { analyticsStore } from '../../store/analyticsStore'
+import { budgetsStore } from '../../store/budgetsStore'
 import { useTheme } from '../../context/ThemeContext'
 import { getNivoTheme, CHART_COLORS } from '../../config/nivoTheme'
 
@@ -32,7 +35,8 @@ function BudgetVsActualChart({
   nivoTheme: object
   isDark: boolean
 }) {
-  const { data: items = [], isLoading } = useBudgetVsActual(budgetId)
+  const { isLoading } = useBudgetVsActual(budgetId)
+  const items = useStore(budgetsStore, (s) => s.budgetVsActual[budgetId] ?? [])
   const barData = items.map((i) => ({
     category: i.category.length > 12 ? i.category.slice(0, 12) + '…' : i.category,
     Budget: i.planned,
@@ -77,8 +81,9 @@ function SpendingAnalyticsPage() {
   const [months, setMonths] = useState(1)
   const [selectedMonth] = useState(currentMonth())
 
-  const { data: spendingItems = [], isLoading: spendingLoading } = useSpendingByCategory(months)
-  const { data: budgets = [] } = useBudgets()
+  const { isLoading: spendingLoading } = useSpendingByCategory(months)
+  const spendingItems = useStore(analyticsStore, (s) => s.spendingByCategory[months] ?? [])
+  const budgets = useStore(budgetsStore, (s) => s.data)
   const currentBudget = budgets.find((b) => b.month === selectedMonth)
 
   const pieData = spendingItems.map((item, i) => ({

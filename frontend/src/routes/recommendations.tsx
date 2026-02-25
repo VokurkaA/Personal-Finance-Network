@@ -8,11 +8,8 @@ import {
   Lightbulb,
   ChevronDown,
 } from 'lucide-react'
-import {
-  useSavingsRecommendations,
-  useInvestmentRecommendations,
-  useBudgetAdjustment,
-} from '../queries/useRecommendations'
+import { useStore } from '@tanstack/react-store'
+import { recommendationsStore } from '../store/recommendationsStore'
 import type {
   SavingsRecommendation,
   InvestmentRecommendation,
@@ -181,12 +178,13 @@ function AccordionSection({
 }
 
 function RecommendationsPage() {
-  const { data: savingsData, isLoading: savingsLoading } = useSavingsRecommendations()
-  const { data: investments = [], isLoading: investLoading } = useInvestmentRecommendations()
-  const { data: budgetAdjustments = [], isLoading: adjustLoading } = useBudgetAdjustment()
-
-  const savings = savingsData?.recommendations ?? []
-  const totalPotentialSavings = savingsData?.totalPotentialSavings ?? 0
+  const savings = useStore(recommendationsStore, (s) => s.savings)
+  const totalPotentialSavings = useStore(recommendationsStore, (s) => s.totalPotentialSavings)
+  const savingsLoading = useStore(recommendationsStore, (s) => s.savingsStatus !== 'success')
+  const investments = useStore(recommendationsStore, (s) => s.investments)
+  const investLoading = useStore(recommendationsStore, (s) => s.investmentsStatus !== 'success')
+  const budgetAdjustments = useStore(recommendationsStore, (s) => s.budgetAdjustment['all'] ?? [])
+  const adjustLoading = !useStore(recommendationsStore, (s) => s.budgetAdjustment['all'])
 
   return (
     <div className="flex flex-col gap-6">

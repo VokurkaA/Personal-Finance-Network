@@ -15,6 +15,7 @@ import {
   setTransactionFilter,
   resetTransactionFilters,
 } from '../store/transactionFiltersStore'
+import { transactionsStore } from '../store/transactionsStore'
 
 import type { Transaction } from '../types/entities'
 
@@ -29,7 +30,8 @@ function fmt(n: number) {
 function TransactionsPage() {
   'use no memo'
   const filters = useStore(transactionFiltersStore, (s) => s)
-  const { data: transactions = [], isLoading } = useTransactions(filters)
+  const { isLoading } = useTransactions(filters)
+  const transactions = useStore(transactionsStore, (s) => s.data)
 
   const columns: ColumnDef<Transaction>[] = [
     {

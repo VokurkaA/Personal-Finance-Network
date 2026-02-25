@@ -4,7 +4,9 @@ import { Card, Chip, Skeleton } from '@heroui/react'
 import { ResponsiveSankey } from '@nivo/sankey'
 import { ResponsiveHeatMap } from '@nivo/heatmap'
 import { AlertTriangle, BarChart2 } from 'lucide-react'
-import { useSpendingFlow, useAnomalies, useSpendingPatterns } from '../../queries/useAnalytics'
+import { useSpendingFlow } from '../../queries/useAnalytics'
+import { useStore } from '@tanstack/react-store'
+import { analyticsStore } from '../../store/analyticsStore'
 import { useTheme } from '../../context/ThemeContext'
 import { getNivoTheme, CHART_COLORS } from '../../config/nivoTheme'
 import type { SpendingFlowResponse } from '../../types/api'
@@ -37,9 +39,12 @@ function AnalyticsIndexPage() {
 
   const [month, setMonth] = useState(currentMonth())
 
-  const { data: flow, isLoading: flowLoading } = useSpendingFlow(month)
-  const { data: anomalyData, isLoading: anomalyLoading } = useAnomalies(0.9)
-  const { data: patternsRaw, isLoading: patternsLoading } = useSpendingPatterns(3)
+  const { isLoading: flowLoading } = useSpendingFlow(month)
+  const flow = useStore(analyticsStore, (s) => s.spendingFlow[month])
+  const anomalyData = useStore(analyticsStore, (s) => s.anomalies[0.9])
+  const anomalyLoading = !anomalyData
+  const patternsRaw = useStore(analyticsStore, (s) => s.spendingPatterns[3])
+  const patternsLoading = !patternsRaw
 
   const sankeyData = flow ? buildSankeyData(flow) : null
   const anomalies = anomalyData?.anomalies ?? []

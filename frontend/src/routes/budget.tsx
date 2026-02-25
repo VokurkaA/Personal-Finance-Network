@@ -2,7 +2,9 @@ import { createFileRoute } from '@tanstack/react-router'
 import { useState } from 'react'
 import { Card, Chip, Skeleton, Button, Input } from '@heroui/react'
 import { Plus, Save, Wallet } from 'lucide-react'
-import { useBudgets, useBudgetVsActual, useCreateBudget } from '../queries/useBudget'
+import { useBudgetVsActual, useCreateBudget } from '../queries/useBudget'
+import { useStore } from '@tanstack/react-store'
+import { budgetsStore } from '../store/budgetsStore'
 import { Progress } from '../components/ui/Progress'
 
 export const Route = createFileRoute('/budget')({
@@ -33,7 +35,8 @@ const DEFAULT_CATEGORIES = [
 ]
 
 function BudgetVsActualPanel({ budgetId }: { budgetId: string }) {
-  const { data: items = [], isLoading } = useBudgetVsActual(budgetId)
+  const { isLoading } = useBudgetVsActual(budgetId)
+  const items = useStore(budgetsStore, (s) => s.budgetVsActual[budgetId] ?? [])
 
   const totalPlanned = items.reduce((s, i) => s + i.planned, 0)
   const totalActual = items.reduce((s, i) => s + i.actual, 0)
@@ -170,7 +173,8 @@ function NewBudgetForm({ month, onSuccess }: { month: string; onSuccess: () => v
 
 function BudgetPage() {
   const [selectedMonth, setSelectedMonth] = useState(currentMonth())
-  const { data: budgets = [], isLoading: budgetsLoading } = useBudgets()
+  const budgets = useStore(budgetsStore, (s) => s.data)
+  const budgetsLoading = useStore(budgetsStore, (s) => s.status !== 'success')
 
   const currentBudget = budgets.find((b) => b.month === selectedMonth)
 

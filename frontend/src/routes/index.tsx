@@ -10,9 +10,11 @@ import {
   ArrowDownLeft,
   ArrowUpRight,
 } from 'lucide-react'
-import { useCashflow } from '../queries/useAnalytics'
-import { useGoals } from '../queries/useGoals'
-import { useBudgets, useBudgetVsActual } from '../queries/useBudget'
+import { useBudgetVsActual } from '../queries/useBudget'
+import { useStore } from '@tanstack/react-store'
+import { analyticsStore } from '../store/analyticsStore'
+import { goalsStore } from '../store/goalsStore'
+import { budgetsStore } from '../store/budgetsStore'
 import { useTheme } from '../context/ThemeContext'
 import { getNivoTheme, CHART_COLORS } from '../config/nivoTheme'
 import { Progress } from '../components/ui/Progress'
@@ -91,7 +93,8 @@ function KpiCard({
 }
 
 function BudgetSummary({ budgetId, month }: { budgetId: string; month: string }) {
-  const { data: budgetItems = [], isLoading } = useBudgetVsActual(budgetId)
+  const { isLoading } = useBudgetVsActual(budgetId)
+  const budgetItems = useStore(budgetsStore, (s) => s.budgetVsActual[budgetId] ?? [])
   const totalBudgeted = budgetItems.reduce((s, i) => s + i.planned, 0)
   const totalSpent = budgetItems.reduce((s, i) => s + i.actual, 0)
 
@@ -148,9 +151,11 @@ function DashboardPage() {
   const nivoTheme = getNivoTheme(isDark)
   const month = currentMonth()
 
-  const { data: cashflow, isLoading: cfLoading } = useCashflow(month)
-  const { data: goals = [], isLoading: goalsLoading } = useGoals()
-  const { data: budgets = [] } = useBudgets()
+  const cashflow = useStore(analyticsStore, (s) => s.cashflow[month])
+  const cfLoading = !cashflow
+  const goals = useStore(goalsStore, (s) => s.data)
+  const goalsLoading = useStore(goalsStore, (s) => s.status !== 'success')
+  const budgets = useStore(budgetsStore, (s) => s.data)
 
   const currentBudget = budgets.find((b) => b.month === month)
 
