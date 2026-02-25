@@ -2,6 +2,10 @@ import { apiFetch } from './client'
 import type { BudgetPlan } from '../types/entities'
 import type { BudgetVsActualItem } from '../types/api'
 
+export function getBudgets(): Promise<BudgetPlan[]> {
+  return apiFetch<BudgetPlan[]>('/budgets')
+}
+
 export function getBudget(id: string): Promise<BudgetPlan> {
   return apiFetch<BudgetPlan>(`/budgets/${id}`)
 }

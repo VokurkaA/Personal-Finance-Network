@@ -34,6 +34,7 @@ export const goalKeys = {
 }
 
 export const budgetKeys = {
+  all: ['budgets'] as const,
   detail: (id: string) => ['budgets', id] as const,
   vsActual: (id: string, category: string) => ['budgets', id, 'vs-actual', category] as const,
 }

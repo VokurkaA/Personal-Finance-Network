@@ -1,7 +1,14 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { getBudget, getBudgetVsActual, createBudget } from '../api/budget'
+import { getBudgets, getBudget, getBudgetVsActual, createBudget } from '../api/budget'
 import { budgetKeys, transactionKeys } from './keys'
 import type { BudgetPlan } from '../types/entities'
+
+export function useBudgets() {
+  return useQuery({
+    queryKey: budgetKeys.all,
+    queryFn: getBudgets,
+  })
+}
 
 export function useBudget(id: string) {
   return useQuery({
