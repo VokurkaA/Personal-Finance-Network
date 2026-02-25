@@ -59,9 +59,9 @@ export interface Transaction {
   status: TransactionStatus
   metadata?: TransactionMetadata
   fromAccount?: string // Account id
-  toAccount?: string   // Account id (transfers)
-  merchant?: string    // Merchant id
-  category?: string    // Category id
+  toAccount?: string // Account id (transfers)
+  merchant?: string // Merchant id
+  category?: string // Category id
   categoryConfidence?: number // 0–1.0
 }
 

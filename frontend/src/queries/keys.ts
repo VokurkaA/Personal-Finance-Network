@@ -42,5 +42,6 @@ export const budgetKeys = {
 export const recommendationKeys = {
   savings: ['recommendations', 'savings'] as const,
   investment: ['recommendations', 'investment'] as const,
-  adjustment: (category?: string) => ['recommendations', 'budget-adjustment', category ?? 'all'] as const,
+  adjustment: (category?: string) =>
+    ['recommendations', 'budget-adjustment', category ?? 'all'] as const,
 }

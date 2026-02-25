@@ -1,42 +1,42 @@
 interface ProgressProps {
   value: number // 0–100
-  color?: "success" | "danger" | "warning" | "primary" | "default"
-  size?: "sm" | "md" | "lg"
+  color?: 'success' | 'danger' | 'warning' | 'primary' | 'default'
+  size?: 'sm' | 'md' | 'lg'
   label?: string
   showValueLabel?: boolean
   className?: string
-  "aria-label"?: string
+  'aria-label'?: string
 }
 
-const COLOR_MAP: Record<NonNullable<ProgressProps["color"]>, string> = {
-  success: "bg-green-500",
-  danger: "bg-red-500",
-  warning: "bg-amber-500",
-  primary: "bg-indigo-500",
-  default: "bg-zinc-500",
+const COLOR_MAP: Record<NonNullable<ProgressProps['color']>, string> = {
+  success: 'bg-green-500',
+  danger: 'bg-red-500',
+  warning: 'bg-amber-500',
+  primary: 'bg-indigo-500',
+  default: 'bg-zinc-500',
 }
 
-const TRACK_MAP: Record<NonNullable<ProgressProps["color"]>, string> = {
-  success: "bg-green-500/20",
-  danger: "bg-red-500/20",
-  warning: "bg-amber-500/20",
-  primary: "bg-indigo-500/20",
-  default: "bg-zinc-500/20",
+const TRACK_MAP: Record<NonNullable<ProgressProps['color']>, string> = {
+  success: 'bg-green-500/20',
+  danger: 'bg-red-500/20',
+  warning: 'bg-amber-500/20',
+  primary: 'bg-indigo-500/20',
+  default: 'bg-zinc-500/20',
 }
 
-const HEIGHT_MAP: Record<NonNullable<ProgressProps["size"]>, string> = {
-  sm: "h-1.5",
-  md: "h-2.5",
-  lg: "h-4",
+const HEIGHT_MAP: Record<NonNullable<ProgressProps['size']>, string> = {
+  sm: 'h-1.5',
+  md: 'h-2.5',
+  lg: 'h-4',
 }
 
 export function Progress({
   value,
-  color = "primary",
-  size = "md",
+  color = 'primary',
+  size = 'md',
   label,
   showValueLabel = false,
-  className = "",
+  className = '',
 }: ProgressProps) {
   const pct = Math.min(Math.max(value, 0), 100)
 

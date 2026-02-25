@@ -10,10 +10,7 @@ export function getBudget(id: string): Promise<BudgetPlan> {
   return apiFetch<BudgetPlan>(`/budgets/${id}`)
 }
 
-export function getBudgetVsActual(
-  id: string,
-  category = 'all',
-): Promise<BudgetVsActualItem[]> {
+export function getBudgetVsActual(id: string, category = 'all'): Promise<BudgetVsActualItem[]> {
   return apiFetch<BudgetVsActualItem[]>(`/budgets/${id}/vs-actual?category=${category}`)
 }
 

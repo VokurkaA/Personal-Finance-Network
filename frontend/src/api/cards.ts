@@ -11,4 +11,3 @@ export function createCard(body: Omit<Card, 'id'>): Promise<Card> {
     body: JSON.stringify(body),
   })
 }
-  

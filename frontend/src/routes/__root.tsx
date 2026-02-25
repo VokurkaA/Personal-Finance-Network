@@ -1,11 +1,11 @@
-import { Outlet, createRootRouteWithContext } from "@tanstack/react-router"
-import { TanStackRouterDevtools } from "@tanstack/router-devtools"
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools"
-import { useStore } from "@tanstack/react-store"
-import { Sidebar } from "../components/Sidebar"
-import { Topbar } from "../components/Topbar"
-import { uiStore, openSidebar, closeSidebar, type UiState } from "../store/uiStore"
+import { Outlet, createRootRouteWithContext } from '@tanstack/react-router'
+import { TanStackRouterDevtools } from '@tanstack/router-devtools'
+import { type QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
+import { useStore } from '@tanstack/react-store'
+import { Sidebar } from '../components/Sidebar'
+import { Topbar } from '../components/Topbar'
+import { uiStore, openSidebar, closeSidebar } from '../store/uiStore'
 
 interface RouterContext {
   queryClient: QueryClient
@@ -17,15 +17,12 @@ export const Route = createRootRouteWithContext<RouterContext>()({
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext()
-  const sidebarOpen = useStore(uiStore, (s) => (s as UiState).sidebarOpen)
+  const sidebarOpen = useStore(uiStore, (s) => s.sidebarOpen)
 
   return (
     <QueryClientProvider client={queryClient}>
       <div className="flex h-screen overflow-hidden">
-        <Sidebar
-          isOpen={sidebarOpen}
-          onClose={closeSidebar}
-        />
+        <Sidebar isOpen={sidebarOpen} onClose={closeSidebar} />
         <div className="flex flex-col flex-1 min-w-0 overflow-hidden">
           <Topbar onMenuClick={openSidebar} />
           <main className="flex-1 overflow-y-auto p-6">

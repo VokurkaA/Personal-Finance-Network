@@ -1,11 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import {
-  getGoals,
-  getGoal,
-  getGoalContributions,
-  getGoalForecast,
-  createGoal,
-} from '../api/goals'
+import { getGoals, getGoal, getGoalContributions, getGoalForecast, createGoal } from '../api/goals'
 import { goalKeys } from './keys'
 import type { Goal } from '../types/entities'
 

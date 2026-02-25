@@ -1,36 +1,40 @@
-import { createFileRoute } from "@tanstack/react-router"
-import { Card, Chip, Skeleton, Button, Input } from "@heroui/react"
-import { useStore } from "@tanstack/react-store"
+import { createFileRoute } from '@tanstack/react-router'
+import { Card, Chip, Skeleton, Button, Input } from '@heroui/react'
+import { useStore } from '@tanstack/react-store'
 import {
   useReactTable,
   getCoreRowModel,
   getSortedRowModel,
   type ColumnDef,
   flexRender,
-} from "@tanstack/react-table"
-import { Search, X, ArrowUp, ArrowDown, ArrowLeftRight } from "lucide-react"
-import { useTransactions } from "../queries/useTransactions"
-import { transactionFiltersStore, setTransactionFilter, resetTransactionFilters } from "../store/transactionFiltersStore"
+} from '@tanstack/react-table'
+import { Search, X, ArrowUp, ArrowDown, ArrowLeftRight } from 'lucide-react'
+import { useTransactions } from '../queries/useTransactions'
+import {
+  transactionFiltersStore,
+  setTransactionFilter,
+  resetTransactionFilters,
+} from '../store/transactionFiltersStore'
 
-import type { Transaction } from "../types/entities"
+import type { Transaction } from '../types/entities'
 
-export const Route = createFileRoute("/transactions")({
+export const Route = createFileRoute('/transactions')({
   component: TransactionsPage,
 })
 
 function fmt(n: number) {
-  return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(Math.abs(n))
+  return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(Math.abs(n))
 }
 
 function TransactionsPage() {
-  "use no memo"
+  'use no memo'
   const filters = useStore(transactionFiltersStore, (s) => s)
   const { data: transactions = [], isLoading } = useTransactions(filters)
 
   const columns: ColumnDef<Transaction>[] = [
     {
-      accessorKey: "date",
-      header: "Date",
+      accessorKey: 'date',
+      header: 'Date',
       cell: (info) => (
         <span className="text-xs text-foreground-400">
           {new Date(info.getValue<string>()).toLocaleDateString()}
@@ -38,35 +42,41 @@ function TransactionsPage() {
       ),
     },
     {
-      accessorKey: "description",
-      header: "Description",
+      accessorKey: 'description',
+      header: 'Description',
       cell: (info) => (
-        <span className="text-sm font-medium truncate max-w-50 block">{info.getValue<string>()}</span>
+        <span className="text-sm font-medium truncate max-w-50 block">
+          {info.getValue<string>()}
+        </span>
       ),
     },
     {
-      accessorKey: "amount",
-      header: "Amount",
+      accessorKey: 'amount',
+      header: 'Amount',
       cell: (info) => {
         const row = info.row.original
         return (
           <span
             className={`font-semibold text-sm ${
-              row.type === "income" ? "text-success" : row.type === "expense" ? "text-danger" : "text-primary"
+              row.type === 'income'
+                ? 'text-success'
+                : row.type === 'expense'
+                  ? 'text-danger'
+                  : 'text-primary'
             }`}
           >
-            {row.type === "expense" ? "-" : "+"}
+            {row.type === 'expense' ? '-' : '+'}
             {fmt(info.getValue<number>())}
           </span>
         )
       },
     },
     {
-      accessorKey: "type",
-      header: "Type",
+      accessorKey: 'type',
+      header: 'Type',
       cell: (info) => {
-        const t = info.getValue<"income" | "expense" | "transfer">()
-        const color = t === "income" ? "success" : t === "expense" ? "danger" : "accent"
+        const t = info.getValue<'income' | 'expense' | 'transfer'>()
+        const color = t === 'income' ? 'success' : t === 'expense' ? 'danger' : 'accent'
         return (
           <Chip size="sm" color={color as never} variant="soft">
             {t}
@@ -75,11 +85,11 @@ function TransactionsPage() {
       },
     },
     {
-      accessorKey: "status",
-      header: "Status",
+      accessorKey: 'status',
+      header: 'Status',
       cell: (info) => {
-        const s = info.getValue<"completed" | "pending" | "failed">()
-        const color = s === "completed" ? "success" : s === "pending" ? "warning" : "danger"
+        const s = info.getValue<'completed' | 'pending' | 'failed'>()
+        const color = s === 'completed' ? 'success' : s === 'pending' ? 'warning' : 'danger'
         return (
           <Chip size="sm" color={color as never} variant="secondary">
             {s}
@@ -88,12 +98,14 @@ function TransactionsPage() {
       },
     },
     {
-      accessorKey: "category",
-      header: "Category",
+      accessorKey: 'category',
+      header: 'Category',
       cell: (info) => {
         const cat = info.getValue<string | undefined>()
         return cat ? (
-          <Chip size="sm" variant="soft" color="default">{cat}</Chip>
+          <Chip size="sm" variant="soft" color="default">
+            {cat}
+          </Chip>
         ) : (
           <span className="text-xs text-foreground-300">—</span>
         )
@@ -134,8 +146,8 @@ function TransactionsPage() {
               <Input
                 type="date"
                 className="w-40"
-                value={filters.startDate ?? ""}
-                onChange={(e) => setTransactionFilter("startDate", e.target.value || undefined)}
+                value={filters.startDate ?? ''}
+                onChange={(e) => setTransactionFilter('startDate', e.target.value || undefined)}
               />
             </div>
             <div className="flex flex-col gap-1">
@@ -143,16 +155,16 @@ function TransactionsPage() {
               <Input
                 type="date"
                 className="w-40"
-                value={filters.endDate ?? ""}
-                onChange={(e) => setTransactionFilter("endDate", e.target.value || undefined)}
+                value={filters.endDate ?? ''}
+                onChange={(e) => setTransactionFilter('endDate', e.target.value || undefined)}
               />
             </div>
             <div className="flex flex-col gap-1">
               <label className="text-xs font-medium text-zinc-500">Type</label>
               <select
                 className="border border-divider rounded-lg bg-background text-foreground text-sm px-2.5 py-1.5 focus:outline-none focus:ring-2 focus:ring-primary/40 appearance-none"
-                value={filters.category ?? ""}
-                onChange={(e) => setTransactionFilter("category", e.target.value || undefined)}
+                value={filters.category ?? ''}
+                onChange={(e) => setTransactionFilter('category', e.target.value || undefined)}
               >
                 <option value="">All types</option>
                 <option value="income">Income</option>
@@ -161,11 +173,7 @@ function TransactionsPage() {
               </select>
             </div>
             {hasFilters && (
-              <Button
-                size="sm"
-                variant="danger-soft"
-                onPress={resetTransactionFilters}
-              >
+              <Button size="sm" variant="danger-soft" onPress={resetTransactionFilters}>
                 <X className="w-4 h-4 mr-1" />
                 Reset
               </Button>
@@ -185,7 +193,7 @@ function TransactionsPage() {
         <Card.Content className="p-0">
           {isLoading ? (
             <div className="flex flex-col gap-2 p-4">
-              {[...Array(8)].map((_, i) => (
+              {Array.from({ length: 8 }).map((_, i) => (
                 <Skeleton key={i} className="h-10 w-full rounded" />
               ))}
             </div>
@@ -203,11 +211,15 @@ function TransactionsPage() {
                         >
                           <span className="flex items-center gap-1">
                             {flexRender(header.column.columnDef.header, header.getContext())}
-                            {header.column.getIsSorted() === "asc" && <ArrowUp className="w-3 h-3" />}
-                            {header.column.getIsSorted() === "desc" && <ArrowDown className="w-3 h-3" />}
+                            {header.column.getIsSorted() === 'asc' && (
+                              <ArrowUp className="w-3 h-3" />
+                            )}
+                            {header.column.getIsSorted() === 'desc' && (
+                              <ArrowDown className="w-3 h-3" />
+                            )}
                           </span>
                         </th>
-                      ))
+                      )),
                     )}
                   </tr>
                 </thead>

@@ -1,16 +1,16 @@
-import { createFileRoute, Link, useRouterState } from "@tanstack/react-router"
-import { useState } from "react"
-import { Card, Chip, Skeleton } from "@heroui/react"
-import { ResponsivePie } from "@nivo/pie"
-import { ResponsiveBar } from "@nivo/bar"
-import { ResponsiveTreeMap } from "@nivo/treemap"
-import { TrendingUp, TrendingDown, Minus } from "lucide-react"
-import { useSpendingByCategory } from "../../queries/useAnalytics"
-import { useBudgets, useBudgetVsActual } from "../../queries/useBudget"
-import { useTheme } from "../../context/ThemeContext"
-import { getNivoTheme, CHART_COLORS } from "../../config/nivoTheme"
+import { createFileRoute, Link, useRouterState } from '@tanstack/react-router'
+import { useState } from 'react'
+import { Card, Chip, Skeleton } from '@heroui/react'
+import { ResponsivePie } from '@nivo/pie'
+import { ResponsiveBar } from '@nivo/bar'
+import { ResponsiveTreeMap } from '@nivo/treemap'
+import { TrendingUp, TrendingDown, Minus } from 'lucide-react'
+import { useSpendingByCategory } from '../../queries/useAnalytics'
+import { useBudgets, useBudgetVsActual } from '../../queries/useBudget'
+import { useTheme } from '../../context/ThemeContext'
+import { getNivoTheme, CHART_COLORS } from '../../config/nivoTheme'
 
-export const Route = createFileRoute("/analytics/spending")({
+export const Route = createFileRoute('/analytics/spending')({
   component: SpendingAnalyticsPage,
 })
 
@@ -18,9 +18,9 @@ function currentMonth() {
   return new Date().toISOString().slice(0, 7)
 }
 
-function TrendIcon({ direction }: { direction: "up" | "down" | "stable" }) {
-  if (direction === "up") return <TrendingUp className="w-4 h-4 text-danger" />
-  if (direction === "down") return <TrendingDown className="w-4 h-4 text-success" />
+function TrendIcon({ direction }: { direction: 'up' | 'down' | 'stable' }) {
+  if (direction === 'up') return <TrendingUp className="w-4 h-4 text-danger" />
+  if (direction === 'down') return <TrendingDown className="w-4 h-4 text-success" />
   return <Minus className="w-4 h-4 text-foreground-400" />
 }
 
@@ -34,7 +34,7 @@ function BudgetVsActualChart({
 }) {
   const { data: items = [], isLoading } = useBudgetVsActual(budgetId)
   const barData = items.map((i) => ({
-    category: i.category.length > 12 ? i.category.slice(0, 12) + "…" : i.category,
+    category: i.category.length > 12 ? i.category.slice(0, 12) + '…' : i.category,
     Budget: i.planned,
     Actual: i.actual,
   }))
@@ -51,7 +51,7 @@ function BudgetVsActualChart({
     <div className="h-48">
       <ResponsiveBar
         data={barData}
-        keys={["Budget", "Actual"]}
+        keys={['Budget', 'Actual']}
         indexBy="category"
         theme={nivoTheme as never}
         colors={[CHART_COLORS[0], CHART_COLORS[4]]}
@@ -71,7 +71,7 @@ function BudgetVsActualChart({
 function SpendingAnalyticsPage() {
   const pathname = useRouterState({ select: (s) => s.location.pathname })
   const { theme } = useTheme()
-  const isDark = theme === "dark"
+  const isDark = theme === 'dark'
   const nivoTheme = getNivoTheme(isDark)
 
   const [months, setMonths] = useState(1)
@@ -89,13 +89,13 @@ function SpendingAnalyticsPage() {
   }))
 
   const trendBarData = spendingItems.map((item) => ({
-    category: item.category.length > 10 ? item.category.slice(0, 10) + "…" : item.category,
-    "This Month": item.thisMonth,
-    "Last Month": item.lastMonth,
+    category: item.category.length > 10 ? item.category.slice(0, 10) + '…' : item.category,
+    'This Month': item.thisMonth,
+    'Last Month': item.lastMonth,
   }))
 
   const treemapData = {
-    id: "spending",
+    id: 'spending',
     children: spendingItems.map((item) => ({
       id: item.category,
       value: item.thisMonth,
@@ -108,16 +108,22 @@ function SpendingAnalyticsPage() {
     <div className="flex flex-col gap-6">
       <div className="flex border-b border-divider">
         {[
-          { to: "/analytics", label: "Money Flow", exact: true },
-          { to: "/analytics/spending", label: "Spending Analysis", exact: false },
+          { to: '/analytics', label: 'Money Flow', exact: true },
+          {
+            to: '/analytics/spending',
+            label: 'Spending Analysis',
+            exact: false,
+          },
         ].map(({ to, label, exact }) => (
           <Link
             key={to}
             to={to}
             className={`px-4 py-2 text-sm font-medium transition-colors -mb-px border-b-2 ${
-              exact ? pathname === to : pathname.startsWith(to)
-                ? "border-primary text-primary"
-                : "border-transparent text-foreground-400 hover:text-foreground"
+              exact
+                ? pathname === to
+                : pathname.startsWith(to)
+                  ? 'border-primary text-primary'
+                  : 'border-transparent text-foreground-400 hover:text-foreground'
             }`}
           >
             {label}
@@ -140,7 +146,10 @@ function SpendingAnalyticsPage() {
         </select>
         {!spendingLoading && (
           <span className="text-sm text-foreground-400">
-            Total: <span className="font-semibold text-foreground">${totalThisMonth.toLocaleString()}</span>
+            Total:{' '}
+            <span className="font-semibold text-foreground">
+              ${totalThisMonth.toLocaleString()}
+            </span>
           </span>
         )}
       </div>
@@ -154,7 +163,9 @@ function SpendingAnalyticsPage() {
             {spendingLoading ? (
               <Skeleton className="h-64 w-full rounded-lg" />
             ) : pieData.length === 0 ? (
-              <div className="flex h-64 items-center justify-center text-foreground-400 text-sm">No spending data</div>
+              <div className="flex h-64 items-center justify-center text-foreground-400 text-sm">
+                No spending data
+              </div>
             ) : (
               <div className="h-64">
                 <ResponsivePie
@@ -166,18 +177,18 @@ function SpendingAnalyticsPage() {
                   cornerRadius={4}
                   margin={{ top: 20, right: 80, bottom: 20, left: 80 }}
                   enableArcLinkLabels
-                  arcLinkLabelsTextColor={isDark ? "#a1a1aa" : "#52525b"}
+                  arcLinkLabelsTextColor={isDark ? '#a1a1aa' : '#52525b'}
                   arcLinkLabelsThickness={2}
                   arcLabelsSkipAngle={12}
                   legends={[
                     {
-                      anchor: "right",
-                      direction: "column",
+                      anchor: 'right',
+                      direction: 'column',
                       translateX: 80,
                       itemWidth: 80,
                       itemHeight: 18,
                       symbolSize: 10,
-                      symbolShape: "circle",
+                      symbolShape: 'circle',
                     },
                   ]}
                 />
@@ -194,12 +205,14 @@ function SpendingAnalyticsPage() {
             {spendingLoading ? (
               <Skeleton className="h-64 w-full rounded-lg" />
             ) : trendBarData.length === 0 ? (
-              <div className="flex h-64 items-center justify-center text-foreground-400 text-sm">No data</div>
+              <div className="flex h-64 items-center justify-center text-foreground-400 text-sm">
+                No data
+              </div>
             ) : (
               <div className="h-64">
                 <ResponsiveBar
                   data={trendBarData}
-                  keys={["This Month", "Last Month"]}
+                  keys={['This Month', 'Last Month']}
                   indexBy="category"
                   theme={nivoTheme}
                   colors={[CHART_COLORS[0], CHART_COLORS[1]]}
@@ -208,7 +221,9 @@ function SpendingAnalyticsPage() {
                   borderRadius={4}
                   margin={{ top: 10, right: 10, bottom: 60, left: 60 }}
                   axisBottom={{ tickRotation: -30 }}
-                  axisLeft={{ format: (v: number) => `$${(v / 1000).toFixed(0)}k` }}
+                  axisLeft={{
+                    format: (v: number) => `$${(v / 1000).toFixed(0)}k`,
+                  }}
                   labelSkipHeight={25}
                   enableGridX={false}
                 />
@@ -226,7 +241,9 @@ function SpendingAnalyticsPage() {
           {spendingLoading ? (
             <Skeleton className="h-52 w-full rounded-lg" />
           ) : treemapData.children.length === 0 ? (
-            <div className="flex h-52 items-center justify-center text-foreground-400 text-sm">No data</div>
+            <div className="flex h-52 items-center justify-center text-foreground-400 text-sm">
+              No data
+            </div>
           ) : (
             <div className="h-52">
               <ResponsiveTreeMap
@@ -237,7 +254,7 @@ function SpendingAnalyticsPage() {
                 theme={nivoTheme}
                 colors={CHART_COLORS}
                 borderWidth={3}
-                borderColor={isDark ? "#18181b" : "#f4f4f5"}
+                borderColor={isDark ? '#18181b' : '#f4f4f5'}
                 labelSkipSize={24}
                 label={(node) => `${node.id}`}
                 parentLabelSize={24}
@@ -255,11 +272,18 @@ function SpendingAnalyticsPage() {
         <Card.Content>
           {!currentBudget ? (
             <p className="text-sm text-foreground-400">
-              No budget plan for {selectedMonth}. Create one on the{" "}
-              <a href="/budget" className="text-primary underline">Budget</a> page.
+              No budget plan for {selectedMonth}. Create one on the{' '}
+              <a href="/budget" className="text-primary underline">
+                Budget
+              </a>{' '}
+              page.
             </p>
           ) : (
-            <BudgetVsActualChart budgetId={currentBudget.id} nivoTheme={nivoTheme} isDark={isDark} />
+            <BudgetVsActualChart
+              budgetId={currentBudget.id}
+              nivoTheme={nivoTheme}
+              isDark={isDark}
+            />
           )}
         </Card.Content>
       </Card>
@@ -272,21 +296,28 @@ function SpendingAnalyticsPage() {
           <Card.Content className="p-0">
             <div className="divide-y divide-divider">
               {spendingItems.map((item) => (
-                <div key={item.category} className="flex items-center justify-between px-4 py-3 gap-4">
+                <div
+                  key={item.category}
+                  className="flex items-center justify-between px-4 py-3 gap-4"
+                >
                   <span className="text-sm font-medium w-40 truncate">{item.category}</span>
                   <span className="text-sm font-bold">${item.thisMonth.toLocaleString()}</span>
-                  <span className="text-xs text-foreground-400">vs ${item.lastMonth.toLocaleString()} last mo.</span>
+                  <span className="text-xs text-foreground-400">
+                    vs ${item.lastMonth.toLocaleString()} last mo.
+                  </span>
                   <TrendIcon direction={item.trend} />
                   <Chip
                     size="sm"
                     variant="soft"
-                    color={item.trend === "up" ? "danger" : item.trend === "down" ? "success" : "default"}
+                    color={
+                      item.trend === 'up' ? 'danger' : item.trend === 'down' ? 'success' : 'default'
+                    }
                   >
-                    {item.trend === "up"
+                    {item.trend === 'up'
                       ? `+${(((item.thisMonth - item.lastMonth) / (item.lastMonth || 1)) * 100).toFixed(0)}%`
-                      : item.trend === "down"
-                      ? `-${(((item.lastMonth - item.thisMonth) / (item.lastMonth || 1)) * 100).toFixed(0)}%`
-                      : "—"}
+                      : item.trend === 'down'
+                        ? `-${(((item.lastMonth - item.thisMonth) / (item.lastMonth || 1)) * 100).toFixed(0)}%`
+                        : '—'}
                   </Chip>
                 </div>
               ))}

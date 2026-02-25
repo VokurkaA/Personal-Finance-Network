@@ -1,15 +1,23 @@
-import { createFileRoute } from "@tanstack/react-router"
-import { Card, Chip, Skeleton } from "@heroui/react"
-import { ResponsiveBar } from "@nivo/bar"
-import { TrendingUp, TrendingDown, Minus, Target, Wallet, ArrowDownLeft, ArrowUpRight } from "lucide-react"
-import { useCashflow } from "../queries/useAnalytics"
-import { useGoals } from "../queries/useGoals"
-import { useBudgets, useBudgetVsActual } from "../queries/useBudget"
-import { useTheme } from "../context/ThemeContext"
-import { getNivoTheme, CHART_COLORS } from "../config/nivoTheme"
-import { Progress } from "../components/ui/Progress"
+import { createFileRoute } from '@tanstack/react-router'
+import { Card, Chip, Skeleton } from '@heroui/react'
+import { ResponsiveBar } from '@nivo/bar'
+import {
+  TrendingUp,
+  TrendingDown,
+  Minus,
+  Target,
+  Wallet,
+  ArrowDownLeft,
+  ArrowUpRight,
+} from 'lucide-react'
+import { useCashflow } from '../queries/useAnalytics'
+import { useGoals } from '../queries/useGoals'
+import { useBudgets, useBudgetVsActual } from '../queries/useBudget'
+import { useTheme } from '../context/ThemeContext'
+import { getNivoTheme, CHART_COLORS } from '../config/nivoTheme'
+import { Progress } from '../components/ui/Progress'
 
-export const Route = createFileRoute("/")({
+export const Route = createFileRoute('/')({
   component: DashboardPage,
 })
 
@@ -18,29 +26,38 @@ function currentMonth() {
 }
 
 function fmt(n: number) {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
     maximumFractionDigits: 0,
   }).format(n)
 }
 
-function TrendChip({ direction }: { direction: "up" | "down" | "stable" }) {
-  if (direction === "up")
+function TrendChip({ direction }: { direction: 'up' | 'down' | 'stable' }) {
+  if (direction === 'up')
     return (
       <Chip color="success" variant="soft" size="sm">
-        <span className="flex items-center gap-1"><TrendingUp className="w-3 h-3" />Up</span>
+        <span className="flex items-center gap-1">
+          <TrendingUp className="w-3 h-3" />
+          Up
+        </span>
       </Chip>
     )
-  if (direction === "down")
+  if (direction === 'down')
     return (
       <Chip color="danger" variant="soft" size="sm">
-        <span className="flex items-center gap-1"><TrendingDown className="w-3 h-3" />Down</span>
+        <span className="flex items-center gap-1">
+          <TrendingDown className="w-3 h-3" />
+          Down
+        </span>
       </Chip>
     )
   return (
     <Chip color="default" variant="soft" size="sm">
-      <span className="flex items-center gap-1"><Minus className="w-3 h-3" />Stable</span>
+      <span className="flex items-center gap-1">
+        <Minus className="w-3 h-3" />
+        Stable
+      </span>
     </Chip>
   )
 }
@@ -91,7 +108,7 @@ function BudgetSummary({ budgetId, month }: { budgetId: string; month: string })
       <Card.Content>
         {isLoading ? (
           <div className="flex flex-col gap-3">
-            {[...Array(4)].map((_, i) => (
+            {Array.from({ length: 4 }).map((_, i) => (
               <Skeleton key={i} className="h-6 w-full rounded" />
             ))}
           </div>
@@ -101,7 +118,11 @@ function BudgetSummary({ budgetId, month }: { budgetId: string; month: string })
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             {budgetItems.slice(0, 8).map((item) => {
               const color =
-                item.percentageUsed > 100 ? "danger" : item.percentageUsed > 80 ? "warning" : "success"
+                item.percentageUsed > 100
+                  ? 'danger'
+                  : item.percentageUsed > 80
+                    ? 'warning'
+                    : 'success'
               return (
                 <div key={item.category} className="flex flex-col gap-1">
                   <div className="flex justify-between text-xs">
@@ -123,7 +144,7 @@ function BudgetSummary({ budgetId, month }: { budgetId: string; month: string })
 
 function DashboardPage() {
   const { theme } = useTheme()
-  const isDark = theme === "dark"
+  const isDark = theme === 'dark'
   const nivoTheme = getNivoTheme(isDark)
   const month = currentMonth()
 
@@ -147,25 +168,25 @@ function DashboardPage() {
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <KpiCard
           label="Total Income"
-          value={cashflow ? fmt(cashflow.totalIncome) : "—"}
+          value={cashflow ? fmt(cashflow.totalIncome) : '—'}
           icon={<ArrowUpRight className="w-5 h-5 text-success" />}
           isLoading={cfLoading}
         />
         <KpiCard
           label="Total Expenses"
-          value={cashflow ? fmt(cashflow.totalExpenses) : "—"}
+          value={cashflow ? fmt(cashflow.totalExpenses) : '—'}
           icon={<ArrowDownLeft className="w-5 h-5 text-danger" />}
           isLoading={cfLoading}
         />
         <KpiCard
           label="Net Cashflow"
-          value={cashflow ? fmt(cashflow.netCashflow) : "—"}
+          value={cashflow ? fmt(cashflow.netCashflow) : '—'}
           icon={<Wallet className="w-5 h-5 text-primary" />}
           isLoading={cfLoading}
         />
         <KpiCard
           label="Savings Rate"
-          value={cashflow ? `${(cashflow.savingsRate * 100).toFixed(1)}%` : "—"}
+          value={cashflow ? `${(cashflow.savingsRate * 100).toFixed(1)}%` : '—'}
           icon={<Target className="w-5 h-5 text-warning" />}
           isLoading={cfLoading}
         />
@@ -188,7 +209,7 @@ function DashboardPage() {
               <div className="h-52">
                 <ResponsiveBar
                   data={barData}
-                  keys={["Income", "Expenses"]}
+                  keys={['Income', 'Expenses']}
                   indexBy="month"
                   theme={nivoTheme}
                   colors={[CHART_COLORS[2], CHART_COLORS[4]]}
@@ -202,15 +223,15 @@ function DashboardPage() {
                   margin={{ top: 10, right: 10, bottom: 10, left: 52 }}
                   legends={[
                     {
-                      dataFrom: "keys",
-                      anchor: "top-right",
-                      direction: "row",
+                      dataFrom: 'keys',
+                      anchor: 'top-right',
+                      direction: 'row',
                       translateY: -16,
                       translateX: 0,
                       itemWidth: 80,
                       itemHeight: 20,
                       symbolSize: 10,
-                      symbolShape: "circle",
+                      symbolShape: 'circle',
                     },
                   ]}
                 />
@@ -267,8 +288,11 @@ function DashboardPage() {
         <Card>
           <Card.Content>
             <p className="text-sm text-foreground-400">
-              No budget plan found for {month}. Create one on the{" "}
-              <a href="/budget" className="text-primary underline">Budget</a> page.
+              No budget plan found for {month}. Create one on the{' '}
+              <a href="/budget" className="text-primary underline">
+                Budget
+              </a>{' '}
+              page.
             </p>
           </Card.Content>
         </Card>

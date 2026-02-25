@@ -1,10 +1,10 @@
-import { useRouterState } from "@tanstack/react-router"
-import { Button } from "@heroui/react"
-import { Menu } from "lucide-react"
-import { useStore } from "@tanstack/react-store"
-import { NAV_ITEMS } from "../config/nav"
-import { useAccounts } from "../queries/useAccounts"
-import { selectedAccountStore, selectAccount } from "../store/selectedAccountStore"
+import { useRouterState } from '@tanstack/react-router'
+import { Button } from '@heroui/react'
+import { Menu } from 'lucide-react'
+import { useStore } from '@tanstack/react-store'
+import { NAV_ITEMS } from '../config/nav'
+import { useAccounts } from '../queries/useAccounts'
+import { selectedAccountStore, selectAccount } from '../store/selectedAccountStore'
 
 interface TopbarProps {
   onMenuClick: () => void
@@ -13,9 +13,9 @@ interface TopbarProps {
 function usePageTitle(): string {
   const pathname = useRouterState({ select: (s) => s.location.pathname })
   const match = NAV_ITEMS.find(({ to }) =>
-    to === "/" ? pathname === "/" : pathname.startsWith(to)
+    to === '/' ? pathname === '/' : pathname.startsWith(to),
   )
-  return match?.label ?? "Finance"
+  return match?.label ?? 'Finance'
 }
 
 export function Topbar({ onMenuClick }: TopbarProps) {
@@ -49,7 +49,7 @@ export function Topbar({ onMenuClick }: TopbarProps) {
           <select
             className="border border-divider rounded-lg bg-background text-foreground text-xs px-2.5 py-1.5 focus:outline-none focus:ring-2 focus:ring-primary/40 appearance-none w-44"
             aria-label="Select account"
-            value={accountId ?? ""}
+            value={accountId ?? ''}
             onChange={(e) => selectAccount(e.target.value || null)}
           >
             <option value="">All accounts</option>

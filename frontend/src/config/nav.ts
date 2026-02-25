@@ -6,7 +6,7 @@ import {
   Target,
   Lightbulb,
   type LucideIcon,
-} from "lucide-react"
+} from 'lucide-react'
 
 export interface NavItem {
   to: string
@@ -15,10 +15,10 @@ export interface NavItem {
 }
 
 export const NAV_ITEMS: NavItem[] = [
-  { to: "/", label: "Dashboard", icon: LayoutDashboard },
-  { to: "/transactions", label: "Transactions", icon: ArrowLeftRight },
-  { to: "/analytics", label: "Analytics", icon: BarChart2 },
-  { to: "/budget", label: "Budget", icon: Wallet },
-  { to: "/goals", label: "Goals", icon: Target },
-  { to: "/recommendations", label: "Recommendations", icon: Lightbulb },
+  { to: '/', label: 'Dashboard', icon: LayoutDashboard },
+  { to: '/transactions', label: 'Transactions', icon: ArrowLeftRight },
+  { to: '/analytics', label: 'Analytics', icon: BarChart2 },
+  { to: '/budget', label: 'Budget', icon: Wallet },
+  { to: '/goals', label: 'Goals', icon: Target },
+  { to: '/recommendations', label: 'Recommendations', icon: Lightbulb },
 ] as const

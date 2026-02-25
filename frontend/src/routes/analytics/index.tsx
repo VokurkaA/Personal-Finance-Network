@@ -1,15 +1,15 @@
-import { createFileRoute, Link, useRouterState } from "@tanstack/react-router"
-import { useState } from "react"
-import { Card, Chip, Skeleton } from "@heroui/react"
-import { ResponsiveSankey } from "@nivo/sankey"
-import { ResponsiveHeatMap } from "@nivo/heatmap"
-import { AlertTriangle, BarChart2 } from "lucide-react"
-import { useSpendingFlow, useAnomalies, useSpendingPatterns } from "../../queries/useAnalytics"
-import { useTheme } from "../../context/ThemeContext"
-import { getNivoTheme, CHART_COLORS } from "../../config/nivoTheme"
-import type { SpendingFlowResponse } from "../../types/api"
+import { createFileRoute, Link, useRouterState } from '@tanstack/react-router'
+import { useState } from 'react'
+import { Card, Chip, Skeleton } from '@heroui/react'
+import { ResponsiveSankey } from '@nivo/sankey'
+import { ResponsiveHeatMap } from '@nivo/heatmap'
+import { AlertTriangle, BarChart2 } from 'lucide-react'
+import { useSpendingFlow, useAnomalies, useSpendingPatterns } from '../../queries/useAnalytics'
+import { useTheme } from '../../context/ThemeContext'
+import { getNivoTheme, CHART_COLORS } from '../../config/nivoTheme'
+import type { SpendingFlowResponse } from '../../types/api'
 
-export const Route = createFileRoute("/analytics/")({
+export const Route = createFileRoute('/analytics/')({
   component: AnalyticsIndexPage,
 })
 
@@ -32,7 +32,7 @@ type PatternRow = { id: string; data: { x: string; y: number }[] }
 function AnalyticsIndexPage() {
   const pathname = useRouterState({ select: (s) => s.location.pathname })
   const { theme } = useTheme()
-  const isDark = theme === "dark"
+  const isDark = theme === 'dark'
   const nivoTheme = getNivoTheme(isDark)
 
   const [month, setMonth] = useState(currentMonth())
@@ -55,16 +55,22 @@ function AnalyticsIndexPage() {
     <div className="flex flex-col gap-6">
       <div className="flex border-b border-divider">
         {[
-          { to: "/analytics", label: "Money Flow", exact: true },
-          { to: "/analytics/spending", label: "Spending Analysis", exact: false },
+          { to: '/analytics', label: 'Money Flow', exact: true },
+          {
+            to: '/analytics/spending',
+            label: 'Spending Analysis',
+            exact: false,
+          },
         ].map(({ to, label, exact }) => (
           <Link
             key={to}
             to={to}
             className={`px-4 py-2 text-sm font-medium transition-colors -mb-px border-b-2 ${
-              exact ? pathname === to : pathname.startsWith(to)
-                ? "border-primary text-primary"
-                : "border-transparent text-foreground-400 hover:text-foreground"
+              exact
+                ? pathname === to
+                : pathname.startsWith(to)
+                  ? 'border-primary text-primary'
+                  : 'border-transparent text-foreground-400 hover:text-foreground'
             }`}
           >
             {label}
@@ -81,7 +87,9 @@ function AnalyticsIndexPage() {
           onChange={(e) => setMonth(e.target.value)}
         >
           {months.map((m) => (
-            <option key={m} value={m}>{m}</option>
+            <option key={m} value={m}>
+              {m}
+            </option>
           ))}
         </select>
       </div>
@@ -134,7 +142,9 @@ function AnalyticsIndexPage() {
         <Card.Content>
           {anomalyLoading ? (
             <div className="flex flex-col gap-3">
-              {[...Array(3)].map((_, i) => <Skeleton key={i} className="h-16 w-full rounded" />)}
+              {Array.from({ length: 3 }).map((_, i) => (
+                <Skeleton key={i} className="h-16 w-full rounded" />
+              ))}
             </div>
           ) : anomalies.length === 0 ? (
             <p className="text-sm text-foreground-400">No anomalies detected</p>
@@ -145,7 +155,9 @@ function AnalyticsIndexPage() {
                   <div className="flex items-start justify-between gap-2">
                     <div>
                       <p className="text-sm font-semibold">{a.merchant}</p>
-                      <p className="text-xs text-foreground-400">{a.category} · {new Date(a.date).toLocaleDateString()}</p>
+                      <p className="text-xs text-foreground-400">
+                        {a.category} · {new Date(a.date).toLocaleDateString()}
+                      </p>
                     </div>
                     <div className="flex flex-col items-end gap-1 shrink-0">
                       <span className="text-sm font-bold text-danger">
@@ -157,9 +169,7 @@ function AnalyticsIndexPage() {
                     </div>
                   </div>
                   <p className="text-xs text-foreground-400">{a.reason}</p>
-                  {a.recommendation && (
-                    <p className="text-xs text-primary">{a.recommendation}</p>
-                  )}
+                  {a.recommendation && <p className="text-xs text-primary">{a.recommendation}</p>}
                 </div>
               ))}
             </div>
@@ -183,14 +193,14 @@ function AnalyticsIndexPage() {
               <ResponsiveHeatMap
                 data={patterns}
                 theme={nivoTheme}
-                colors={{ type: "sequential", scheme: "blues" }}
+                colors={{ type: 'sequential', scheme: 'blues' }}
                 margin={{ top: 20, right: 60, bottom: 60, left: 80 }}
                 axisTop={null}
                 axisLeft={{ tickSize: 5 }}
                 axisBottom={{ tickRotation: -30 }}
                 borderRadius={2}
                 borderWidth={2}
-                borderColor={isDark ? "#18181b" : "#f4f4f5"}
+                borderColor={isDark ? '#18181b' : '#f4f4f5'}
               />
             </div>
           )}

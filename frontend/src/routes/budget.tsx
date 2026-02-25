@@ -1,11 +1,11 @@
-import { createFileRoute } from "@tanstack/react-router"
-import { useState } from "react"
-import { Card, Chip, Skeleton, Button, Input } from "@heroui/react"
-import { Plus, Save, Wallet } from "lucide-react"
-import { useBudgets, useBudgetVsActual, useCreateBudget } from "../queries/useBudget"
-import { Progress } from "../components/ui/Progress"
+import { createFileRoute } from '@tanstack/react-router'
+import { useState } from 'react'
+import { Card, Chip, Skeleton, Button, Input } from '@heroui/react'
+import { Plus, Save, Wallet } from 'lucide-react'
+import { useBudgets, useBudgetVsActual, useCreateBudget } from '../queries/useBudget'
+import { Progress } from '../components/ui/Progress'
 
-export const Route = createFileRoute("/budget")({
+export const Route = createFileRoute('/budget')({
   component: BudgetPage,
 })
 
@@ -14,22 +14,22 @@ function currentMonth() {
 }
 
 function fmt(n: number) {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
     maximumFractionDigits: 0,
   }).format(n)
 }
 
 const DEFAULT_CATEGORIES = [
-  "Housing",
-  "Food & Dining",
-  "Transportation",
-  "Entertainment",
-  "Shopping",
-  "Health",
-  "Utilities",
-  "Savings",
+  'Housing',
+  'Food & Dining',
+  'Transportation',
+  'Entertainment',
+  'Shopping',
+  'Health',
+  'Utilities',
+  'Savings',
 ]
 
 function BudgetVsActualPanel({ budgetId }: { budgetId: string }) {
@@ -48,13 +48,17 @@ function BudgetVsActualPanel({ budgetId }: { budgetId: string }) {
         </div>
         <div className="flex flex-col items-center p-3 bg-content2 rounded-xl">
           <p className="text-xs text-foreground-400">Spent</p>
-          <p className={`font-bold text-base ${totalActual > totalPlanned ? "text-danger" : "text-foreground"}`}>
+          <p
+            className={`font-bold text-base ${totalActual > totalPlanned ? 'text-danger' : 'text-foreground'}`}
+          >
             {fmt(totalActual)}
           </p>
         </div>
         <div className="flex flex-col items-center p-3 bg-content2 rounded-xl">
           <p className="text-xs text-foreground-400">Remaining</p>
-          <p className={`font-bold text-base ${totalPlanned - totalActual < 0 ? "text-danger" : "text-success"}`}>
+          <p
+            className={`font-bold text-base ${totalPlanned - totalActual < 0 ? 'text-danger' : 'text-success'}`}
+          >
             {fmt(Math.max(totalPlanned - totalActual, 0))}
           </p>
         </div>
@@ -64,14 +68,16 @@ function BudgetVsActualPanel({ budgetId }: { budgetId: string }) {
         <div className="flex items-center gap-2 p-3 bg-danger-50 border border-danger-200 rounded-xl">
           <Wallet className="w-4 h-4 text-danger shrink-0" />
           <p className="text-sm text-danger">
-            {overBudgetCount} {overBudgetCount === 1 ? "category is" : "categories are"} over budget
+            {overBudgetCount} {overBudgetCount === 1 ? 'category is' : 'categories are'} over budget
           </p>
         </div>
       )}
 
       {isLoading ? (
         <div className="flex flex-col gap-3">
-          {[...Array(5)].map((_, i) => <Skeleton key={i} className="h-14 w-full rounded" />)}
+          {Array.from({ length: 5 }).map((_, i) => (
+            <Skeleton key={i} className="h-14 w-full rounded" />
+          ))}
         </div>
       ) : items.length === 0 ? (
         <p className="text-sm text-foreground-400">No category data available yet</p>
@@ -79,14 +85,20 @@ function BudgetVsActualPanel({ budgetId }: { budgetId: string }) {
         <div className="flex flex-col gap-4">
           {items.map((item) => {
             const pct = Math.min(item.percentageUsed, 100)
-            const color: "danger" | "warning" | "success" =
-              item.percentageUsed > 100 ? "danger" : item.percentageUsed > 80 ? "warning" : "success"
+            const color: 'danger' | 'warning' | 'success' =
+              item.percentageUsed > 100
+                ? 'danger'
+                : item.percentageUsed > 80
+                  ? 'warning'
+                  : 'success'
             return (
               <div key={item.category} className="flex flex-col gap-1">
                 <div className="flex items-center justify-between text-sm">
                   <span className="font-medium truncate max-w-50">{item.category}</span>
                   <span className="flex items-center gap-2 shrink-0">
-                    <span className="text-foreground-400 text-xs">{fmt(item.actual)} / {fmt(item.planned)}</span>
+                    <span className="text-foreground-400 text-xs">
+                      {fmt(item.actual)} / {fmt(item.planned)}
+                    </span>
                     <Chip size="sm" color={color} variant="soft">
                       {item.percentageUsed.toFixed(0)}%
                     </Chip>
@@ -108,16 +120,19 @@ function BudgetVsActualPanel({ budgetId }: { budgetId: string }) {
 function NewBudgetForm({ month, onSuccess }: { month: string; onSuccess: () => void }) {
   const { mutate: createBudget, isPending } = useCreateBudget()
   const [amounts, setAmounts] = useState<Record<string, string>>(
-    Object.fromEntries(DEFAULT_CATEGORIES.map((c) => [c, ""]))
+    Object.fromEntries(DEFAULT_CATEGORIES.map((c) => [c, ''])),
   )
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     const categories = Object.entries(amounts)
-      .filter(([, v]) => v !== "" && Number(v) > 0)
-      .map(([category, budgetAmount]) => ({ category, budgetAmount: Number(budgetAmount) }))
+      .filter(([, v]) => v !== '' && Number(v) > 0)
+      .map(([category, budgetAmount]) => ({
+        category,
+        budgetAmount: Number(budgetAmount),
+      }))
     if (categories.length === 0) return
-    createBudget({ month, categories, notes: "" }, { onSuccess })
+    createBudget({ month, categories, notes: '' }, { onSuccess })
   }
 
   return (
@@ -147,7 +162,7 @@ function NewBudgetForm({ month, onSuccess }: { month: string; onSuccess: () => v
         className="self-start"
       >
         <Save className="w-4 h-4 mr-1" />
-        {isPending ? "Saving…" : "Create Budget Plan"}
+        {isPending ? 'Saving…' : 'Create Budget Plan'}
       </Button>
     </form>
   )
@@ -178,14 +193,18 @@ function BudgetPage() {
               onChange={(e) => setSelectedMonth(e.target.value)}
             >
               {months.map((m) => (
-                <option key={m} value={m}>{m}</option>
+                <option key={m} value={m}>
+                  {m}
+                </option>
               ))}
             </select>
           </Card.Header>
           <Card.Content>
             {budgetsLoading ? (
               <div className="flex flex-col gap-3">
-                {[...Array(5)].map((_, i) => <Skeleton key={i} className="h-14 w-full rounded" />)}
+                {Array.from({ length: 5 }).map((_, i) => (
+                  <Skeleton key={i} className="h-14 w-full rounded" />
+                ))}
               </div>
             ) : currentBudget ? (
               <BudgetVsActualPanel budgetId={currentBudget.id} />
@@ -194,7 +213,9 @@ function BudgetPage() {
                 <div className="flex items-center gap-2 p-3 bg-content2 rounded-xl">
                   <Plus className="w-4 h-4 text-foreground-400 shrink-0" />
                   <p className="text-sm text-foreground-400">
-                    No budget plan for <span className="font-medium text-foreground">{selectedMonth}</span>. Create one below.
+                    No budget plan for{' '}
+                    <span className="font-medium text-foreground">{selectedMonth}</span>. Create one
+                    below.
                   </p>
                 </div>
                 <NewBudgetForm month={selectedMonth} onSuccess={() => {}} />
@@ -212,7 +233,9 @@ function BudgetPage() {
           <Card.Content>
             {budgetsLoading ? (
               <div className="flex flex-col gap-2">
-                {[...Array(4)].map((_, i) => <Skeleton key={i} className="h-10 w-full rounded" />)}
+                {Array.from({ length: 4 }).map((_, i) => (
+                  <Skeleton key={i} className="h-10 w-full rounded" />
+                ))}
               </div>
             ) : budgets.length === 0 ? (
               <p className="text-sm text-foreground-400">No budget plans yet</p>
@@ -222,7 +245,7 @@ function BudgetPage() {
                   <button
                     key={b.id}
                     className={`flex items-center justify-between py-3 text-left w-full hover:text-primary transition-colors ${
-                      b.month === selectedMonth ? "text-primary" : ""
+                      b.month === selectedMonth ? 'text-primary' : ''
                     }`}
                     onClick={() => setSelectedMonth(b.month)}
                   >
@@ -230,7 +253,7 @@ function BudgetPage() {
                     <Chip
                       size="sm"
                       variant="soft"
-                      color={b.month === selectedMonth ? "accent" : "default"}
+                      color={b.month === selectedMonth ? 'accent' : 'default'}
                     >
                       {b.categories.length} categories
                     </Chip>

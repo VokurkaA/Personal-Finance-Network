@@ -1,24 +1,24 @@
-import type { PartialTheme } from "@nivo/theming"
+import type { PartialTheme } from '@nivo/theming'
 
 export const CHART_COLORS = [
-  "#6366f1", // indigo
-  "#22d3ee", // cyan
-  "#f59e0b", // amber
-  "#10b981", // emerald
-  "#f43f5e", // rose
-  "#a78bfa", // violet
-  "#34d399", // green
-  "#fb923c", // orange
+  '#6366f1', // indigo
+  '#22d3ee', // cyan
+  '#f59e0b', // amber
+  '#10b981', // emerald
+  '#f43f5e', // rose
+  '#a78bfa', // violet
+  '#34d399', // green
+  '#fb923c', // orange
 ]
 
 export function getNivoTheme(isDark: boolean): PartialTheme {
-  const textColor = isDark ? "#a1a1aa" : "#52525b"
-  const gridColor = isDark ? "#27272a" : "#e4e4e7"
-  const tooltipBg = isDark ? "#18181b" : "#ffffff"
-  const tooltipText = isDark ? "#fafafa" : "#09090b"
+  const textColor = isDark ? '#a1a1aa' : '#52525b'
+  const gridColor = isDark ? '#27272a' : '#e4e4e7'
+  const tooltipBg = isDark ? '#18181b' : '#ffffff'
+  const tooltipText = isDark ? '#fafafa' : '#09090b'
 
   return {
-    background: "transparent",
+    background: 'transparent',
     text: {
       fontSize: 12,
       fill: textColor,
@@ -65,8 +65,8 @@ export function getNivoTheme(isDark: boolean): PartialTheme {
         color: tooltipText,
         fontSize: 12,
         borderRadius: 8,
-        boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.2)",
-        padding: "8px 12px",
+        boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.2)',
+        padding: '8px 12px',
       },
     },
     labels: {

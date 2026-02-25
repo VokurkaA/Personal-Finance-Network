@@ -1,5 +1,5 @@
-import { createFileRoute } from "@tanstack/react-router"
-import { Card, Chip, Skeleton, Button, Accordion } from "@heroui/react"
+import { createFileRoute } from '@tanstack/react-router'
+import { Card, Chip, Skeleton, Button, Accordion } from '@heroui/react'
 import {
   PiggyBank,
   TrendingUp,
@@ -7,36 +7,40 @@ import {
   ArrowRight,
   Lightbulb,
   ChevronDown,
-} from "lucide-react"
+} from 'lucide-react'
 import {
   useSavingsRecommendations,
   useInvestmentRecommendations,
   useBudgetAdjustment,
-} from "../queries/useRecommendations"
-import type { SavingsRecommendation, InvestmentRecommendation, BudgetAdjustmentSuggestion } from "../types/api"
+} from '../queries/useRecommendations'
+import type {
+  SavingsRecommendation,
+  InvestmentRecommendation,
+  BudgetAdjustmentSuggestion,
+} from '../types/api'
 
-export const Route = createFileRoute("/recommendations")({
+export const Route = createFileRoute('/recommendations')({
   component: RecommendationsPage,
 })
 
 function fmt(n: number) {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
     maximumFractionDigits: 0,
   }).format(n)
 }
 
 const PRIORITY_COLOR = {
-  high: "danger",
-  medium: "warning",
-  low: "default",
+  high: 'danger',
+  medium: 'warning',
+  low: 'default',
 } as const
 
 const RISK_COLOR = {
-  low: "success",
-  medium: "warning",
-  high: "danger",
+  low: 'success',
+  medium: 'warning',
+  high: 'danger',
 } as const
 
 function SavingsCard({ rec }: { rec: SavingsRecommendation }) {
@@ -111,7 +115,7 @@ function BudgetAdjustCard({ rec }: { rec: BudgetAdjustmentSuggestion }) {
           <p className="font-semibold text-sm">{rec.category}</p>
           <Chip
             size="sm"
-            color={diff > 0 ? "danger" : "success"}
+            color={diff > 0 ? 'danger' : 'success'}
             variant="soft"
             className="shrink-0"
           >
@@ -161,16 +165,16 @@ function AccordionSection({
             {icon}
             <span className="text-sm font-semibold">{title}</span>
             {!isLoading && (
-              <Chip size="sm" variant="soft" color="default">{count}</Chip>
+              <Chip size="sm" variant="soft" color="default">
+                {count}
+              </Chip>
             )}
           </span>
           <ChevronDown className="w-4 h-4 text-foreground-400 transition-transform data-[state=open]:rotate-180" />
         </Accordion.Trigger>
       </Accordion.Heading>
       <Accordion.Panel>
-        <Accordion.Body className="px-2 pb-4">
-          {children}
-        </Accordion.Body>
+        <Accordion.Body className="px-2 pb-4">{children}</Accordion.Body>
       </Accordion.Panel>
     </Accordion.Item>
   )
@@ -192,7 +196,7 @@ function RecommendationsPage() {
             <Lightbulb className="w-6 h-6 text-primary shrink-0" />
             <div>
               <p className="font-semibold text-sm">
-                You could save up to{" "}
+                You could save up to{' '}
                 <span className="text-primary">{fmt(totalPotentialSavings)}</span> per month
               </p>
               <p className="text-xs text-foreground-400">
@@ -203,7 +207,11 @@ function RecommendationsPage() {
         </Card>
       )}
 
-      <Accordion allowsMultipleExpanded defaultExpandedKeys={["savings", "investments", "budget"]} className="flex flex-col gap-2">
+      <Accordion
+        allowsMultipleExpanded
+        defaultExpandedKeys={['savings', 'investments', 'budget']}
+        className="flex flex-col gap-2"
+      >
         <AccordionSection
           id="savings"
           icon={<PiggyBank className="w-4 h-4 text-success" />}
@@ -213,13 +221,17 @@ function RecommendationsPage() {
         >
           {savingsLoading ? (
             <div className="flex flex-col gap-3">
-              {[...Array(3)].map((_, i) => <Skeleton key={i} className="h-28 w-full rounded-xl" />)}
+              {Array.from({ length: 3 }).map((_, i) => (
+                <Skeleton key={i} className="h-28 w-full rounded-xl" />
+              ))}
             </div>
           ) : savings.length === 0 ? (
             <p className="text-sm text-foreground-400">No savings recommendations at this time</p>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              {savings.map((rec) => <SavingsCard key={rec.title} rec={rec} />)}
+              {savings.map((rec) => (
+                <SavingsCard key={rec.title} rec={rec} />
+              ))}
             </div>
           )}
         </AccordionSection>
@@ -233,13 +245,17 @@ function RecommendationsPage() {
         >
           {investLoading ? (
             <div className="flex flex-col gap-3">
-              {[...Array(3)].map((_, i) => <Skeleton key={i} className="h-28 w-full rounded-xl" />)}
+              {Array.from({ length: 3 }).map((_, i) => (
+                <Skeleton key={i} className="h-28 w-full rounded-xl" />
+              ))}
             </div>
           ) : investments.length === 0 ? (
             <p className="text-sm text-foreground-400">No investment recommendations available</p>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              {investments.map((rec) => <InvestmentCard key={rec.asset} rec={rec} />)}
+              {investments.map((rec) => (
+                <InvestmentCard key={rec.asset} rec={rec} />
+              ))}
             </div>
           )}
         </AccordionSection>
@@ -253,13 +269,17 @@ function RecommendationsPage() {
         >
           {adjustLoading ? (
             <div className="flex flex-col gap-3">
-              {[...Array(3)].map((_, i) => <Skeleton key={i} className="h-28 w-full rounded-xl" />)}
+              {Array.from({ length: 3 }).map((_, i) => (
+                <Skeleton key={i} className="h-28 w-full rounded-xl" />
+              ))}
             </div>
           ) : budgetAdjustments.length === 0 ? (
             <p className="text-sm text-foreground-400">No budget adjustments suggested</p>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              {budgetAdjustments.map((rec) => <BudgetAdjustCard key={rec.category} rec={rec} />)}
+              {budgetAdjustments.map((rec) => (
+                <BudgetAdjustCard key={rec.category} rec={rec} />
+              ))}
             </div>
           )}
         </AccordionSection>

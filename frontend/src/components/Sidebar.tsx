@@ -1,8 +1,8 @@
-import { Link } from "@tanstack/react-router"
-import { Button, ScrollShadow } from "@heroui/react"
-import { Sun, Moon, TrendingUp, X } from "lucide-react"
-import { useTheme } from "../context/ThemeContext"
-import { NAV_ITEMS } from "../config/nav"
+import { Link } from '@tanstack/react-router'
+import { Button, ScrollShadow } from '@heroui/react'
+import { Sun, Moon, TrendingUp, X } from 'lucide-react'
+import { useTheme } from '../context/ThemeContext'
+import { NAV_ITEMS } from '../config/nav'
 
 interface SidebarProps {
   isOpen: boolean
@@ -12,22 +12,24 @@ interface SidebarProps {
 function NavLinks({ onClose }: { onClose?: () => void }) {
   return (
     <ScrollShadow className="flex-1">
-    <nav className="px-3 py-4 space-y-1">
-      {NAV_ITEMS.map(({ to, label, icon: Icon }) => (
-        <Link
-          key={to}
-          to={to}
-          activeOptions={{ exact: to === "/" }}
-          activeProps={{ className: "bg-primary/10 text-primary font-semibold" }}
-          inactiveProps={{ className: "text-foreground-500 hover:bg-default-100 hover:text-foreground" }}
-          className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors"
-          onClick={onClose}
-        >
-          <Icon className="h-4 w-4 shrink-0" />
-          {label}
-        </Link>
-      ))}
-    </nav>
+      <nav className="px-3 py-4 space-y-1">
+        {NAV_ITEMS.map(({ to, label, icon: Icon }) => (
+          <Link
+            key={to}
+            to={to}
+            activeOptions={{ exact: to === '/' }}
+            activeProps={{ className: 'bg-primary/10 text-primary font-semibold' }}
+            inactiveProps={{
+              className: 'text-foreground-500 hover:bg-default-100 hover:text-foreground',
+            }}
+            className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors"
+            onClick={onClose}
+          >
+            <Icon className="h-4 w-4 shrink-0" />
+            {label}
+          </Link>
+        ))}
+      </nav>
     </ScrollShadow>
   )
 }
@@ -56,8 +58,12 @@ function SidebarContent({ onClose }: { onClose?: () => void }) {
           className="w-full justify-start gap-3 text-foreground-500"
           size="sm"
         >
-          {theme === "light" ? <Moon className="h-4 w-4 shrink-0" /> : <Sun className="h-4 w-4 shrink-0" />}
-          {theme === "light" ? "Dark mode" : "Light mode"}
+          {theme === 'light' ? (
+            <Moon className="h-4 w-4 shrink-0" />
+          ) : (
+            <Sun className="h-4 w-4 shrink-0" />
+          )}
+          {theme === 'light' ? 'Dark mode' : 'Light mode'}
         </Button>
       </div>
     </div>
@@ -75,20 +81,16 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
       {/* Mobile — overlay drawer */}
       <div
         className={`fixed inset-0 z-50 md:hidden transition-opacity duration-300 ${
-          isOpen ? "pointer-events-auto opacity-100" : "pointer-events-none opacity-0"
+          isOpen ? 'pointer-events-auto opacity-100' : 'pointer-events-none opacity-0'
         }`}
       >
         {/* Backdrop */}
-        <div
-          className="absolute inset-0 bg-black/50"
-          onClick={onClose}
-          aria-hidden="true"
-        />
+        <div className="absolute inset-0 bg-black/50" onClick={onClose} aria-hidden="true" />
 
         {/* Drawer panel */}
         <aside
           className={`absolute inset-y-0 left-0 w-60 flex flex-col transition-transform duration-300 ${
-            isOpen ? "translate-x-0" : "-translate-x-full"
+            isOpen ? 'translate-x-0' : '-translate-x-full'
           }`}
         >
           {/* Close button */}
