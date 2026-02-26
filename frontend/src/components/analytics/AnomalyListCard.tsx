@@ -15,7 +15,7 @@ export function AnomalyListCard() {
         <Card.Title>Anomaly Detection</Card.Title>
         {!isLoading && (
           <Chip size="sm" color="warning" variant="soft" className="ml-auto">
-            {anomalies.length} detected
+            <Chip.Label>{anomalies.length} detected</Chip.Label>
           </Chip>
         )}
       </Card.Header>
@@ -27,7 +27,7 @@ export function AnomalyListCard() {
             ))}
           </div>
         ) : anomalies.length === 0 ? (
-          <p className="text-sm text-foreground-400">No anomalies detected</p>
+          <p className="text-sm text-foreground-400 text-center py-4">No anomalies detected</p>
         ) : (
           <div className="flex flex-col divide-y divide-divider">
             {anomalies.map((a) => (
@@ -44,7 +44,7 @@ export function AnomalyListCard() {
                       ${Math.abs(a.amount).toLocaleString()}
                     </span>
                     <Chip size="sm" color="warning" variant="soft">
-                      Score: {(a.anomalyScore * 100).toFixed(0)}%
+                      <Chip.Label>Score: {(a.anomalyScore * 100).toFixed(0)}%</Chip.Label>
                     </Chip>
                   </div>
                 </div>

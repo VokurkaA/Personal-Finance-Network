@@ -3,13 +3,11 @@ import { ResponsivePie } from '@nivo/pie'
 import { useStore } from '@tanstack/react-store'
 import { analyticsStore } from '../../store/analyticsStore'
 import { useSpendingByCategory } from '../../queries/useAnalytics'
-import { useTheme } from '../../context/ThemeContext'
-import { getNivoTheme, CHART_COLORS } from '../../config/nivoTheme'
+import { useResolvedChartTheme } from '../../config/nivoTheme'
+import { Deferred } from '../ui/Deferred'
 
 export function SpendingPieCard({ months }: { months: number }) {
-  const { theme } = useTheme()
-  const isDark = theme === 'dark'
-  const nivoTheme = getNivoTheme(isDark)
+  const { theme: nivoTheme, colors } = useResolvedChartTheme()
 
   const { isLoading } = useSpendingByCategory(months)
   const spendingItems = useStore(analyticsStore, (s) => s.spendingByCategory[months] ?? [])
@@ -18,7 +16,7 @@ export function SpendingPieCard({ months }: { months: number }) {
     id: item.category,
     label: item.category,
     value: item.thisMonth,
-    color: CHART_COLORS[i % CHART_COLORS.length],
+    color: colors[i % colors.length],
   }))
 
   return (
@@ -35,30 +33,32 @@ export function SpendingPieCard({ months }: { months: number }) {
           </div>
         ) : (
           <div className="h-64">
-            <ResponsivePie
-              data={pieData}
-              theme={nivoTheme}
-              colors={CHART_COLORS}
-              innerRadius={0.55}
-              padAngle={2}
-              cornerRadius={4}
-              margin={{ top: 20, right: 80, bottom: 20, left: 80 }}
-              enableArcLinkLabels
-              arcLinkLabelsTextColor={isDark ? '#a1a1aa' : '#52525b'}
-              arcLinkLabelsThickness={2}
-              arcLabelsSkipAngle={12}
-              legends={[
-                {
-                  anchor: 'right',
-                  direction: 'column',
-                  translateX: 80,
-                  itemWidth: 80,
-                  itemHeight: 18,
-                  symbolSize: 10,
-                  symbolShape: 'circle',
-                },
-              ]}
-            />
+            <Deferred fallback={<Skeleton className="h-64 w-full rounded-lg" />}>
+              <ResponsivePie
+                data={pieData}
+                theme={nivoTheme}
+                colors={colors}
+                innerRadius={0.55}
+                padAngle={2}
+                cornerRadius={4}
+                margin={{ top: 20, right: 80, bottom: 20, left: 80 }}
+                enableArcLinkLabels
+                arcLinkLabelsTextColor={nivoTheme.text?.fill}
+                arcLinkLabelsThickness={2}
+                arcLabelsSkipAngle={12}
+                legends={[
+                  {
+                    anchor: 'right',
+                    direction: 'column',
+                    translateX: 80,
+                    itemWidth: 80,
+                    itemHeight: 18,
+                    symbolSize: 10,
+                    symbolShape: 'circle',
+                  },
+                ]}
+              />
+            </Deferred>
           </div>
         )}
       </Card.Content>

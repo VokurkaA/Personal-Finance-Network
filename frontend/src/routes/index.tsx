@@ -1,6 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { Card, Chip, Skeleton } from '@heroui/react'
-import { ResponsiveBar } from '@nivo/bar'
+import { lazy, Suspense, memo } from 'react'
+import { Card, Chip, Skeleton, Link } from '@heroui/react'
 import {
   TrendingUp,
   TrendingDown,
@@ -15,9 +15,11 @@ import { useStore } from '@tanstack/react-store'
 import { analyticsStore } from '../store/analyticsStore'
 import { goalsStore } from '../store/goalsStore'
 import { budgetsStore } from '../store/budgetsStore'
-import { useTheme } from '../context/ThemeContext'
-import { getNivoTheme, CHART_COLORS } from '../config/nivoTheme'
 import { Progress } from '../components/ui/Progress'
+
+const CashflowBarChart = lazy(() =>
+  import('../components/dashboard/CashflowBarChart').then((m) => ({ default: m.CashflowBarChart })),
+)
 
 export const Route = createFileRoute('/')({
   component: DashboardPage,
@@ -35,36 +37,30 @@ function fmt(n: number) {
   }).format(n)
 }
 
-function TrendChip({ direction }: { direction: 'up' | 'down' | 'stable' }) {
+const TrendChip = memo(function TrendChip({ direction }: { direction: 'up' | 'down' | 'stable' }) {
   if (direction === 'up')
     return (
       <Chip color="success" variant="soft" size="sm">
-        <span className="flex items-center gap-1">
-          <TrendingUp className="w-3 h-3" />
-          Up
-        </span>
+        <TrendingUp className="w-3 h-3" />
+        <Chip.Label>Up</Chip.Label>
       </Chip>
     )
   if (direction === 'down')
     return (
       <Chip color="danger" variant="soft" size="sm">
-        <span className="flex items-center gap-1">
-          <TrendingDown className="w-3 h-3" />
-          Down
-        </span>
+        <TrendingDown className="w-3 h-3" />
+        <Chip.Label>Down</Chip.Label>
       </Chip>
     )
   return (
     <Chip color="default" variant="soft" size="sm">
-      <span className="flex items-center gap-1">
-        <Minus className="w-3 h-3" />
-        Stable
-      </span>
+      <Minus className="w-3 h-3" />
+      <Chip.Label>Stable</Chip.Label>
     </Chip>
   )
-}
+})
 
-function KpiCard({
+const KpiCard = memo(function KpiCard({
   label,
   value,
   icon,
@@ -90,7 +86,7 @@ function KpiCard({
       </Card.Content>
     </Card>
   )
-}
+})
 
 function BudgetSummary({ budgetId, month }: { budgetId: string; month: string }) {
   const { isLoading } = useBudgetVsActual(budgetId)
@@ -146,9 +142,6 @@ function BudgetSummary({ budgetId, month }: { budgetId: string; month: string })
 }
 
 function DashboardPage() {
-  const { theme } = useTheme()
-  const isDark = theme === 'dark'
-  const nivoTheme = getNivoTheme(isDark)
   const month = currentMonth()
 
   const cashflow = useStore(analyticsStore, (s) => s.cashflow[month])
@@ -162,10 +155,6 @@ function DashboardPage() {
   const nearestGoal = goals
     .slice()
     .sort((a, b) => new Date(a.deadline).getTime() - new Date(b.deadline).getTime())[0]
-
-  const barData = cashflow
-    ? [{ month: cashflow.month, Income: cashflow.totalIncome, Expenses: cashflow.totalExpenses }]
-    : []
 
   return (
     <div className="flex flex-col gap-6">
@@ -206,41 +195,18 @@ function DashboardPage() {
           <Card.Content>
             {cfLoading ? (
               <Skeleton className="h-52 w-full rounded-lg" />
-            ) : barData.length === 0 ? (
+            ) : !cashflow ? (
               <div className="flex h-52 items-center justify-center text-foreground-400 text-sm">
                 No cashflow data for this month
               </div>
             ) : (
-              <div className="h-52">
-                <ResponsiveBar
-                  data={barData}
-                  keys={['Income', 'Expenses']}
-                  indexBy="month"
-                  theme={nivoTheme}
-                  colors={[CHART_COLORS[2], CHART_COLORS[4]]}
-                  groupMode="grouped"
-                  padding={0.5}
-                  borderRadius={4}
-                  axisLeft={{ format: (v: number) => `$${(v / 1000).toFixed(0)}k` }}
-                  axisBottom={null}
-                  labelSkipHeight={20}
-                  enableGridX={false}
-                  margin={{ top: 10, right: 10, bottom: 10, left: 52 }}
-                  legends={[
-                    {
-                      dataFrom: 'keys',
-                      anchor: 'top-right',
-                      direction: 'row',
-                      translateY: -16,
-                      translateX: 0,
-                      itemWidth: 80,
-                      itemHeight: 20,
-                      symbolSize: 10,
-                      symbolShape: 'circle',
-                    },
-                  ]}
+              <Suspense fallback={<Skeleton className="h-52 w-full rounded-lg" />}>
+                <CashflowBarChart
+                  month={cashflow.month}
+                  totalIncome={cashflow.totalIncome}
+                  totalExpenses={cashflow.totalExpenses}
                 />
-              </div>
+              </Suspense>
             )}
           </Card.Content>
         </Card>
@@ -264,7 +230,7 @@ function DashboardPage() {
                 <div className="flex items-start justify-between gap-2">
                   <p className="font-semibold text-sm leading-tight">{nearestGoal.name}</p>
                   <Chip size="sm" variant="soft" color="accent" className="shrink-0">
-                    {nearestGoal.type}
+                    <Chip.Label>{nearestGoal.type}</Chip.Label>
                   </Chip>
                 </div>
                 <Progress
@@ -294,9 +260,9 @@ function DashboardPage() {
           <Card.Content>
             <p className="text-sm text-foreground-400">
               No budget plan found for {month}. Create one on the{' '}
-              <a href="/budget" className="text-primary underline">
+              <Link href="/budget" className="text-sm no-underline hover:underline">
                 Budget
-              </a>{' '}
+              </Link>{' '}
               page.
             </p>
           </Card.Content>

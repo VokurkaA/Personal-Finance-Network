@@ -8,6 +8,7 @@ export interface TransactionFilters {
   endDate?: string
   category?: string
   accountId?: string
+  search?: string
 }
 
 export interface CashflowParams {

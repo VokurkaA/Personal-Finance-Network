@@ -1,8 +1,9 @@
 import { Outlet, createRootRouteWithContext } from '@tanstack/react-router'
-import { TanStackRouterDevtools } from '@tanstack/router-devtools'
+import { TanStackRouterDevtools } from '@tanstack/react-router-devtools'
 import { type QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { useStore } from '@tanstack/react-store'
+import { Toast } from '@heroui/react'
 import { Sidebar } from '../components/Sidebar'
 import { Topbar } from '../components/Topbar'
 import { uiStore, openSidebar, closeSidebar } from '../store/uiStore'
@@ -22,6 +23,7 @@ function AppShell() {
 
   return (
     <div className="flex h-screen overflow-hidden">
+      <Toast.Provider />
       <Sidebar isOpen={sidebarOpen} onClose={closeSidebar} />
       <div className="flex flex-col flex-1 min-w-0 overflow-hidden">
         <Topbar onMenuClick={openSidebar} />

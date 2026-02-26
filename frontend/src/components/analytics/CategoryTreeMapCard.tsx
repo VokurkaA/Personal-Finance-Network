@@ -3,13 +3,11 @@ import { ResponsiveTreeMap } from '@nivo/treemap'
 import { useStore } from '@tanstack/react-store'
 import { analyticsStore } from '../../store/analyticsStore'
 import { useSpendingByCategory } from '../../queries/useAnalytics'
-import { useTheme } from '../../context/ThemeContext'
-import { getNivoTheme, CHART_COLORS } from '../../config/nivoTheme'
+import { useResolvedChartTheme } from '../../config/nivoTheme'
+import { Deferred } from '../ui/Deferred'
 
 export function CategoryTreeMapCard({ months }: { months: number }) {
-  const { theme } = useTheme()
-  const isDark = theme === 'dark'
-  const nivoTheme = getNivoTheme(isDark)
+  const { theme: nivoTheme, colors } = useResolvedChartTheme()
 
   const { isLoading } = useSpendingByCategory(months)
   const spendingItems = useStore(analyticsStore, (s) => s.spendingByCategory[months] ?? [])
@@ -33,20 +31,22 @@ export function CategoryTreeMapCard({ months }: { months: number }) {
           </div>
         ) : (
           <div className="h-52">
-            <ResponsiveTreeMap
-              data={treemapData}
-              identity="id"
-              value="value"
-              valueFormat=">-.2s"
-              theme={nivoTheme}
-              colors={CHART_COLORS}
-              borderWidth={3}
-              borderColor={isDark ? '#18181b' : '#f4f4f5'}
-              labelSkipSize={24}
-              label={(node) => `${node.id}`}
-              parentLabelSize={24}
-              margin={{ top: 0, right: 0, bottom: 0, left: 0 }}
-            />
+            <Deferred fallback={<Skeleton className="h-52 w-full rounded-lg" />}>
+              <ResponsiveTreeMap
+                data={treemapData}
+                identity="id"
+                value="value"
+                valueFormat=">-.2s"
+                theme={nivoTheme}
+                colors={colors}
+                borderWidth={3}
+                borderColor={{ from: 'color', modifiers: [['darker', 0.1]] }}
+                labelSkipSize={24}
+                label={(node) => `${node.id}`}
+                parentLabelSize={24}
+                margin={{ top: 0, right: 0, bottom: 0, left: 0 }}
+              />
+            </Deferred>
           </div>
         )}
       </Card.Content>

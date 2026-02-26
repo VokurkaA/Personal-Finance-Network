@@ -130,19 +130,21 @@ export function TransactionTable() {
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-divider">
+                <tr className="border-b border-divider bg-surface-secondary/50">
                   {table.getHeaderGroups().flatMap((hg) =>
                     hg.headers.map((header) => (
                       <th
                         key={header.id}
                         onClick={header.column.getToggleSortingHandler()}
-                        className="px-4 py-3 text-left font-medium text-foreground-400 cursor-pointer select-none"
+                        className="px-4 py-3.5 text-left font-semibold text-muted cursor-pointer select-none hover:text-foreground transition-colors uppercase tracking-wider text-[10px]"
                       >
                         <span className="flex items-center gap-1">
                           {flexRender(header.column.columnDef.header, header.getContext())}
-                          {header.column.getIsSorted() === 'asc' && <ArrowUp className="w-3 h-3" />}
+                          {header.column.getIsSorted() === 'asc' && (
+                            <ArrowUp className="w-3 h-3 text-accent" />
+                          )}
                           {header.column.getIsSorted() === 'desc' && (
-                            <ArrowDown className="w-3 h-3" />
+                            <ArrowDown className="w-3 h-3 text-accent" />
                           )}
                         </span>
                       </th>
@@ -153,18 +155,21 @@ export function TransactionTable() {
               <tbody>
                 {table.getRowModel().rows.length === 0 ? (
                   <tr>
-                    <td colSpan={6} className="text-center py-10 text-foreground-400">
-                      <div className="flex flex-col items-center gap-2">
-                        <ArrowLeftRight className="w-8 h-8" />
+                    <td colSpan={6} className="text-center py-12 text-muted">
+                      <div className="flex flex-col items-center gap-3">
+                        <ArrowLeftRight className="w-10 h-10 opacity-10" />
                         <p className="text-sm">No transactions found</p>
                       </div>
                     </td>
                   </tr>
                 ) : (
                   table.getRowModel().rows.map((row) => (
-                    <tr key={row.id} className="border-b border-divider last:border-0">
+                    <tr
+                      key={row.id}
+                      className="border-b border-separator last:border-0 hover:bg-surface-secondary/40 transition-colors"
+                    >
                       {row.getVisibleCells().map((cell) => (
-                        <td key={cell.id} className="px-4 py-3">
+                        <td key={cell.id} className="px-4 py-4">
                           {flexRender(cell.column.columnDef.cell, cell.getContext())}
                         </td>
                       ))}

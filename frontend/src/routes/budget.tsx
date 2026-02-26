@@ -37,9 +37,10 @@ function BudgetPage() {
             <Card.Title>Budget Plan</Card.Title>
             <Select
               aria-label="Select month"
-              selectedKey={selectedMonth}
-              onSelectionChange={(key) => setSelectedMonth(key as string)}
+              value={selectedMonth}
+              onChange={(key) => setSelectedMonth(key as string)}
               className="w-36"
+              variant="secondary"
             >
               <Select.Trigger>
                 <Select.Value />
@@ -48,7 +49,7 @@ function BudgetPage() {
               <Select.Popover>
                 <ListBox>
                   {months.map((m) => (
-                    <ListBox.Item key={m} id={m}>
+                    <ListBox.Item key={m} id={m} textValue={m}>
                       {m}
                     </ListBox.Item>
                   ))}

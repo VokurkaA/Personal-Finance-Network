@@ -4,8 +4,8 @@ import { ResponsiveSankey } from '@nivo/sankey'
 import { useStore } from '@tanstack/react-store'
 import { analyticsStore } from '../../store/analyticsStore'
 import { useSpendingFlow } from '../../queries/useAnalytics'
-import { useTheme } from '../../context/ThemeContext'
-import { getNivoTheme, CHART_COLORS } from '../../config/nivoTheme'
+import { useResolvedChartTheme } from '../../config/nivoTheme'
+import { Deferred } from '../ui/Deferred'
 import type { SpendingFlowResponse } from '../../types/api'
 
 function buildSankeyData(flow: SpendingFlowResponse) {
@@ -16,8 +16,7 @@ function buildSankeyData(flow: SpendingFlowResponse) {
 }
 
 export function MoneyFlowCard({ month }: { month: string }) {
-  const { theme } = useTheme()
-  const nivoTheme = getNivoTheme(theme === 'dark')
+  const { theme: nivoTheme, colors } = useResolvedChartTheme()
 
   const { isLoading: flowLoading } = useSpendingFlow(month)
   const flow = useStore(analyticsStore, (s) => s.spendingFlow[month])
@@ -39,22 +38,25 @@ export function MoneyFlowCard({ month }: { month: string }) {
           </div>
         ) : (
           <div className="h-72">
-            <ResponsiveSankey
-              data={sankeyData}
-              theme={nivoTheme}
-              colors={CHART_COLORS}
-              nodeOpacity={1}
-              nodeThickness={18}
-              nodeInnerPadding={3}
-              nodeSpacing={24}
-              nodeBorderWidth={0}
-              linkOpacity={0.4}
-              enableLinkGradient
-              labelPosition="outside"
-              labelOrientation="horizontal"
-              labelPadding={16}
-              margin={{ top: 10, right: 140, bottom: 10, left: 140 }}
-            />
+            <Deferred fallback={<Skeleton className="h-72 w-full rounded-lg" />}>
+              <ResponsiveSankey
+                data={sankeyData}
+                theme={nivoTheme}
+                colors={colors}
+                nodeOpacity={1}
+                nodeThickness={18}
+                nodeInnerPadding={3}
+                nodeSpacing={24}
+                nodeBorderWidth={0}
+                linkOpacity={0.4}
+                enableLinkGradient
+                labelPosition="outside"
+                labelOrientation="horizontal"
+                labelPadding={16}
+                margin={{ top: 10, right: 140, bottom: 10, left: 140 }}
+                labelTextColor={nivoTheme.text?.fill}
+              />
+            </Deferred>
           </div>
         )}
       </Card.Content>

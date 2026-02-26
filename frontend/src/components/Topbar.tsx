@@ -1,7 +1,8 @@
 import { useRouterState } from '@tanstack/react-router'
-import { Button, Select, ListBox } from '@heroui/react'
+import { Button, Select, ListBox, type Key } from '@heroui/react'
 import { Menu } from 'lucide-react'
 import { useStore } from '@tanstack/react-store'
+import { startTransition, memo } from 'react'
 import { NAV_ITEMS } from '../config/nav'
 import { useAccounts } from '../queries/useAccounts'
 import { selectedAccountStore, selectAccount } from '../store/selectedAccountStore'
@@ -18,13 +19,26 @@ function usePageTitle(): string {
   return match?.label ?? 'Finance'
 }
 
-export function Topbar({ onMenuClick }: TopbarProps) {
+export const Topbar = memo(function Topbar({ onMenuClick }: TopbarProps) {
   const title = usePageTitle()
   const { data: accounts = [] } = useAccounts()
   const accountId = useStore(selectedAccountStore, (s) => s.accountId)
+  const isNavigating = useRouterState({ select: (s) => s.status === 'pending' })
+
+  const handleAccountChange = (key: Key | null) => {
+    startTransition(() => {
+      selectAccount(key === 'all' ? null : (key as string))
+    })
+  }
 
   return (
     <header className="sticky top-0 z-40 flex h-14 items-center gap-3 border-b border-divider bg-background/80 backdrop-blur-md px-4 shrink-0">
+      {/* Navigation loading bar */}
+      {isNavigating && (
+        <div className="absolute bottom-0 left-0 right-0 h-0.5 overflow-hidden">
+          <div className="h-full bg-primary animate-[navprogress_1s_ease-in-out_infinite]" />
+        </div>
+      )}
       {/* Hamburger — mobile only */}
       <Button
         isIconOnly
@@ -48,9 +62,10 @@ export function Topbar({ onMenuClick }: TopbarProps) {
         <div className="hidden md:block">
           <Select
             aria-label="Select account"
-            selectedKey={accountId ?? 'all'}
-            onSelectionChange={(key) => selectAccount(key === 'all' ? null : (key as string))}
+            value={accountId ?? 'all'}
+            onChange={handleAccountChange}
             className="w-44"
+            variant="secondary"
           >
             <Select.Trigger>
               <Select.Value />
@@ -58,9 +73,11 @@ export function Topbar({ onMenuClick }: TopbarProps) {
             </Select.Trigger>
             <Select.Popover>
               <ListBox>
-                <ListBox.Item id="all">All accounts</ListBox.Item>
+                <ListBox.Item id="all" textValue="All accounts">
+                  All accounts
+                </ListBox.Item>
                 {accounts.map((acc) => (
-                  <ListBox.Item key={acc.id} id={acc.id}>
+                  <ListBox.Item key={acc.id} id={acc.id} textValue={acc.name}>
                     {acc.name}
                   </ListBox.Item>
                 ))}
@@ -71,4 +88,4 @@ export function Topbar({ onMenuClick }: TopbarProps) {
       )}
     </header>
   )
-}
+})
