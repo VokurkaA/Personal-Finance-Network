@@ -31,7 +31,7 @@ export interface TransactionFilters {
 
 export class TransactionService {
   static async getAll(filters: TransactionFilters): Promise<Transaction[]> {
-    const conditions: string[] = [];
+    let conditions: string[] = [];
     const params: Record<string, unknown> = {};
 
     if (filters.startDate) {
@@ -46,13 +46,23 @@ export class TransactionService {
       conditions.push('cat.name = $category');
       params.category = filters.category;
     }
+
+    let matchBase = TX_MATCH_BASE;
     if (filters.accountId) {
-      conditions.push('(fa.id = $accountId OR ta.id = $accountId)');
+      matchBase = `
+        MATCH (a:Account {id: $accountId})
+        MATCH (t:Transaction)
+        WHERE (t)-[:FROM]->(a) OR (t)-[:TO]->(a)
+        OPTIONAL MATCH (t)-[:FROM]->(fa:Account)
+        OPTIONAL MATCH (t)-[:TO]->(ta:Account)
+        OPTIONAL MATCH (t)-[:SPENT_AT]->(m:Merchant)
+        OPTIONAL MATCH (t)-[r_cat:CATEGORIZED_AS]->(cat:Category)
+      `;
       params.accountId = filters.accountId;
     }
 
     const where = conditions.length ? `WHERE ${conditions.join(' AND ')}` : '';
-    const cypher = `${TX_MATCH_BASE} ${where} ${TX_RETURN}`;
+    const cypher = `${matchBase} ${where} ${TX_RETURN}`;
     const rows = await runQuery<{ tx: Transaction }>(cypher, params);
     return rows.map((r) => r.tx);
   }

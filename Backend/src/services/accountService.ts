@@ -22,14 +22,13 @@ export class AccountService {
     const id = uuidv4();
     const createdAt = new Date().toISOString();
     const row = await runQuerySingle<{ a: Account }>(
-      `CREATE (a:Account {id: $id, name: $name, type: $type, balance: $balance, bank: $bank, createdAt: $createdAt})
-       WITH a
-       MATCH (u:User {id: 'user-001'})
+      `MATCH (u:User {id: $userId})
+       CREATE (a:Account {id: $id, name: $name, type: $type, balance: $balance, bank: $bank, createdAt: $createdAt})
        CREATE (u)-[:HAS {primaryAccount: false}]->(a)
        RETURN a`,
-      { id, ...data, createdAt }
+      { id, ...data, createdAt, userId: 'user-001' }
     );
-    if (!row) throw new Error('Failed to create account');
+    if (!row) throw new Error('User not found or failed to create account');
     return row.a;
   }
 }

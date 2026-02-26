@@ -41,32 +41,30 @@ router.post('/import', upload.single('file'), async (req: Request, res: Response
     trim: true,
   }) as Record<string, string>[];
 
-  let imported = 0;
-  for (const row of records) {
-    const id = uuidv4();
-    await runQuery(
-      `MERGE (t:Transaction {id: $id})
-       SET t.date = $date, t.amount = $amount, t.description = $description,
-           t.type = $type, t.status = $status
-       WITH t
-       OPTIONAL MATCH (c:Category {name: $category})
-       FOREACH (_ IN CASE WHEN c IS NOT NULL THEN [1] ELSE [] END |
-         MERGE (t)-[r:CATEGORIZED_AS]->(c) SET r.confidence = 0.7
-       )`,
-      {
-        id,
-        date: row.date ?? new Date().toISOString().slice(0, 10),
-        amount: parseFloat(row.amount ?? '0'),
-        description: row.description ?? '',
-        type: row.type ?? 'expense',
-        status: row.status ?? 'completed',
-        category: row.category ?? null,
-      }
-    );
-    imported++;
-  }
+  const batchParams = records.map((row) => ({
+    id: uuidv4(),
+    date: row.date ?? new Date().toISOString().slice(0, 10),
+    amount: Number.isNaN(parseFloat(row.amount ?? '0')) ? 0 : parseFloat(row.amount ?? '0'),
+    description: row.description ?? '',
+    type: row.type ?? 'expense',
+    status: row.status ?? 'completed',
+    category: row.category ?? null,
+  }));
 
-  res.json({ imported });
+  await runQuery(
+    `UNWIND $batch AS row
+     MERGE (t:Transaction {id: row.id})
+     SET t.date = row.date, t.amount = row.amount, t.description = row.description,
+         t.type = row.type, t.status = row.status
+     WITH t, row
+     OPTIONAL MATCH (c:Category {name: row.category})
+     FOREACH (_ IN CASE WHEN c IS NOT NULL THEN [1] ELSE [] END |
+       MERGE (t)-[r:CATEGORIZED_AS]->(c) SET r.confidence = 0.7
+     )`,
+    { batch: batchParams }
+  );
+
+  res.json({ imported: batchParams.length });
 });
 
 export default router;
