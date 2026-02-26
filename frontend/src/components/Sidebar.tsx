@@ -1,5 +1,5 @@
 import { useNavigate, useRouterState } from '@tanstack/react-router'
-import { startTransition } from 'react'
+import { startTransition, memo } from 'react'
 import { Button, ScrollShadow, Modal, ListBox } from '@heroui/react'
 import { Sun, Moon, TrendingUp } from 'lucide-react'
 import { useTheme } from '../context/ThemeContext'
@@ -10,7 +10,7 @@ interface SidebarProps {
   onClose: () => void
 }
 
-function NavLinks({ onClose }: { onClose?: () => void }) {
+const NavLinks = memo(function NavLinks({ onClose }: { onClose?: () => void }) {
   const navigate = useNavigate()
   const pathname = useRouterState({ select: (s) => s.location.pathname })
 
@@ -51,9 +51,9 @@ function NavLinks({ onClose }: { onClose?: () => void }) {
       </div>
     </ScrollShadow>
   )
-}
+})
 
-function SidebarContent({ onClose }: { onClose?: () => void }) {
+const SidebarContent = memo(function SidebarContent({ onClose }: { onClose?: () => void }) {
   const { theme, toggle } = useTheme()
 
   return (
@@ -87,9 +87,9 @@ function SidebarContent({ onClose }: { onClose?: () => void }) {
       </div>
     </div>
   )
-}
+})
 
-export function Sidebar({ isOpen, onClose }: SidebarProps) {
+export const Sidebar = memo(function Sidebar({ isOpen, onClose }: SidebarProps) {
   return (
     <>
       {/* Desktop — always visible */}
@@ -98,16 +98,14 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
       </aside>
 
       {/* Mobile — overlay drawer using HeroUI Modal */}
-      <Modal>
-        <Modal.Backdrop isOpen={isOpen} onOpenChange={(open) => !open && onClose()} variant="blur">
-          <Modal.Container placement="top" size="full" className="justify-start">
-            <Modal.Dialog className="h-full w-60 max-w-[80vw] rounded-none shadow-2xl animate-in slide-in-from-left duration-300">
-              <Modal.CloseTrigger className="absolute top-2 right-2 z-10" />
-              <SidebarContent onClose={onClose} />
-            </Modal.Dialog>
-          </Modal.Container>
-        </Modal.Backdrop>
-      </Modal>
+      <Modal.Backdrop isOpen={isOpen} onOpenChange={(open) => !open && onClose()} variant="blur">
+        <Modal.Container placement="top" size="full" className="justify-start">
+          <Modal.Dialog className="h-full w-60 max-w-[80vw] rounded-none shadow-2xl animate-in slide-in-from-left duration-300">
+            <Modal.CloseTrigger className="absolute top-2 right-2 z-10" />
+            <SidebarContent onClose={onClose} />
+          </Modal.Dialog>
+        </Modal.Container>
+      </Modal.Backdrop>
     </>
   )
-}
+})

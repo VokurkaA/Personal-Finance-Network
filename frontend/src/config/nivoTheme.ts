@@ -5,19 +5,25 @@ import { useMemo } from 'react'
 /**
  * Resolves any CSS color string (var, oklch, etc.) to a standard rgb() string
  * that Nivo's animation engine can parse.
+ * Optimizes by reusing a single element.
  */
+let colorResolverElement: HTMLDivElement | null = null
+
 function resolveToRgb(color: string | undefined): string {
   if (!color) return '#000000'
   if (typeof window === 'undefined') return color
 
-  // Create a temporary element to let the browser resolve the color
-  const div = document.createElement('div')
-  div.style.color = color
-  document.body.appendChild(div)
-  const resolved = getComputedStyle(div).color
-  document.body.removeChild(div)
+  if (!colorResolverElement) {
+    colorResolverElement = document.createElement('div')
+    colorResolverElement.style.display = 'none'
+    colorResolverElement.style.visibility = 'hidden'
+    colorResolverElement.style.pointerEvents = 'none'
+    colorResolverElement.id = 'nivo-color-resolver'
+    document.body.appendChild(colorResolverElement)
+  }
 
-  return resolved
+  colorResolverElement.style.color = color
+  return getComputedStyle(colorResolverElement).color
 }
 
 export const CHART_COLOR_VARIABLES = [
@@ -32,25 +38,28 @@ export const CHART_COLOR_VARIABLES = [
 ]
 
 export function useResolvedChartTheme() {
-  // Resolve base theme colors using HeroUI's hook
-  // We disable cache to ensure it updates when the theme (data-theme) changes
-  const fg = resolveToRgb(useCSSVariable('--foreground', undefined, false))
-  const muted = resolveToRgb(useCSSVariable('--muted', undefined, false))
-  const border = resolveToRgb(useCSSVariable('--border', undefined, false))
-  const separator = resolveToRgb(useCSSVariable('--separator', undefined, false))
-  const overlay = resolveToRgb(useCSSVariable('--overlay', undefined, false))
-  const overlayFg = resolveToRgb(useCSSVariable('--overlay-foreground', undefined, false))
+  const rawFg = useCSSVariable('--foreground')
+  const rawMuted = useCSSVariable('--muted')
+  const rawBorder = useCSSVariable('--border')
+  const rawSeparator = useCSSVariable('--separator')
+  const rawOverlay = useCSSVariable('--overlay')
+  const rawOverlayFg = useCSSVariable('--overlay-foreground')
+  const rawSuccess = useCSSVariable('--success')
+  const rawDanger = useCSSVariable('--danger')
 
-  // Resolve the palette
-  const success = useCSSVariable('--success', undefined, false)
-  const danger = useCSSVariable('--danger', undefined, false)
+  return useMemo(() => {
+    const fg = resolveToRgb(rawFg)
+    const muted = resolveToRgb(rawMuted)
+    const border = resolveToRgb(rawBorder)
+    const separator = resolveToRgb(rawSeparator)
+    const overlay = resolveToRgb(rawOverlay)
+    const overlayFg = resolveToRgb(rawOverlayFg)
+    const success = resolveToRgb(rawSuccess)
+    const danger = resolveToRgb(rawDanger)
 
-  const colors = useMemo(() => {
-    return CHART_COLOR_VARIABLES.map((v) => resolveToRgb(`var(${v})`))
-  }, []) // Core variables are CSS strings, the actual values change in the DOM. Empty deps is fine since resolveToRgb handles fresh resolution.
+    const colors = CHART_COLOR_VARIABLES.map((v) => resolveToRgb(`var(${v})`))
 
-  const theme: PartialTheme = useMemo(
-    () => ({
+    const theme: PartialTheme = {
       background: 'transparent',
       text: { fontSize: 12, fill: muted },
       axis: {
@@ -75,11 +84,10 @@ export function useResolvedChartTheme() {
         },
       },
       labels: { text: { fontSize: 11, fill: fg } },
-    }),
-    [fg, muted, border, separator, overlay, overlayFg],
-  )
+    }
 
-  return { theme, colors, success: resolveToRgb(success), danger: resolveToRgb(danger) }
+    return { theme, colors, success, danger }
+  }, [rawFg, rawMuted, rawBorder, rawSeparator, rawOverlay, rawOverlayFg, rawSuccess, rawDanger])
 }
 
 // Legacy export for non-hook usage if needed (reverts to safe hex)

@@ -1,5 +1,6 @@
 import { useNavigate, useRouterState } from '@tanstack/react-router'
 import { Tabs } from '@heroui/react'
+import { startTransition } from 'react'
 
 const TABS = [
   { id: '/analytics', label: 'Money Flow' },
@@ -20,7 +21,11 @@ export function AnalyticsTabs() {
       <Tabs
         variant="primary"
         selectedKey={activeTab}
-        onSelectionChange={(key) => navigate({ to: key as string })}
+        onSelectionChange={(key) => {
+          startTransition(() => {
+            navigate({ to: key as string })
+          })
+        }}
         className="w-full"
       >
         <Tabs.ListContainer>

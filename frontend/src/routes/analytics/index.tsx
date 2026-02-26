@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { useState, lazy, Suspense } from 'react'
+import { useState, lazy, Suspense, startTransition } from 'react'
 import { Select, ListBox, Label, Skeleton } from '@heroui/react'
 import { AnalyticsTabs } from '../../components/analytics/AnalyticsTabs'
 
@@ -43,7 +43,11 @@ function AnalyticsIndexPage() {
         <Select
           aria-label="Select month"
           selectedKey={month}
-          onSelectionChange={(key) => setMonth(key as string)}
+          onSelectionChange={(key) => {
+            startTransition(() => {
+              setMonth(key as string)
+            })
+          }}
           className="w-36"
         >
           <Select.Trigger>

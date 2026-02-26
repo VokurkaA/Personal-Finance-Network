@@ -4,6 +4,7 @@ import { useStore } from '@tanstack/react-store'
 import { budgetsStore } from '../../store/budgetsStore'
 import { useBudgetVsActual } from '../../queries/useBudget'
 import { useResolvedChartTheme } from '../../config/nivoTheme'
+import { Deferred } from '../ui/Deferred'
 
 interface BudgetVsActualCardProps {
   budgetId: string | undefined
@@ -32,21 +33,23 @@ function BudgetBarChart({ budgetId }: { budgetId: string }) {
 
   return (
     <div className="h-48">
-      <ResponsiveBar
-        data={barData}
-        keys={['Budget', 'Actual']}
-        indexBy="category"
-        theme={nivoTheme as never}
-        colors={[colors[0], danger]}
-        groupMode="grouped"
-        padding={0.3}
-        borderRadius={4}
-        margin={{ top: 10, right: 10, bottom: 50, left: 60 }}
-        axisBottom={{ tickRotation: -30 }}
-        axisLeft={{ format: (v: number) => `$${(v / 1000).toFixed(0)}k` }}
-        labelSkipHeight={20}
-        enableGridX={false}
-      />
+      <Deferred fallback={<Skeleton className="h-48 w-full rounded-lg" />}>
+        <ResponsiveBar
+          data={barData}
+          keys={['Budget', 'Actual']}
+          indexBy="category"
+          theme={nivoTheme as never}
+          colors={[colors[0], danger]}
+          groupMode="grouped"
+          padding={0.3}
+          borderRadius={4}
+          margin={{ top: 10, right: 10, bottom: 50, left: 60 }}
+          axisBottom={{ tickRotation: -30 }}
+          axisLeft={{ format: (v: number) => `$${(v / 1000).toFixed(0)}k` }}
+          labelSkipHeight={20}
+          enableGridX={false}
+        />
+      </Deferred>
     </div>
   )
 }

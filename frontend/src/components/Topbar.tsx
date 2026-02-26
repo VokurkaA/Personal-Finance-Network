@@ -1,7 +1,8 @@
 import { useRouterState } from '@tanstack/react-router'
-import { Button, Select, ListBox } from '@heroui/react'
+import { Button, Select, ListBox, type Key } from '@heroui/react'
 import { Menu } from 'lucide-react'
 import { useStore } from '@tanstack/react-store'
+import { startTransition, memo } from 'react'
 import { NAV_ITEMS } from '../config/nav'
 import { useAccounts } from '../queries/useAccounts'
 import { selectedAccountStore, selectAccount } from '../store/selectedAccountStore'
@@ -18,11 +19,17 @@ function usePageTitle(): string {
   return match?.label ?? 'Finance'
 }
 
-export function Topbar({ onMenuClick }: TopbarProps) {
+export const Topbar = memo(function Topbar({ onMenuClick }: TopbarProps) {
   const title = usePageTitle()
   const { data: accounts = [] } = useAccounts()
   const accountId = useStore(selectedAccountStore, (s) => s.accountId)
   const isNavigating = useRouterState({ select: (s) => s.status === 'pending' })
+
+  const handleAccountChange = (key: Key | null) => {
+    startTransition(() => {
+      selectAccount(key === 'all' ? null : (key as string))
+    })
+  }
 
   return (
     <header className="sticky top-0 z-40 flex h-14 items-center gap-3 border-b border-divider bg-background/80 backdrop-blur-md px-4 shrink-0">
@@ -56,7 +63,7 @@ export function Topbar({ onMenuClick }: TopbarProps) {
           <Select
             aria-label="Select account"
             value={accountId ?? 'all'}
-            onChange={(key) => selectAccount(key === 'all' ? null : (key as string))}
+            onChange={handleAccountChange}
             className="w-44"
             variant="secondary"
           >
@@ -81,4 +88,4 @@ export function Topbar({ onMenuClick }: TopbarProps) {
       )}
     </header>
   )
-}
+})

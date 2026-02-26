@@ -4,6 +4,7 @@ import { useStore } from '@tanstack/react-store'
 import { analyticsStore } from '../../store/analyticsStore'
 import { useSpendingByCategory } from '../../queries/useAnalytics'
 import { useResolvedChartTheme } from '../../config/nivoTheme'
+import { Deferred } from '../ui/Deferred'
 
 export function MoMBarCard({ months }: { months: number }) {
   const { theme: nivoTheme, colors } = useResolvedChartTheme()
@@ -31,21 +32,23 @@ export function MoMBarCard({ months }: { months: number }) {
           </div>
         ) : (
           <div className="h-64">
-            <ResponsiveBar
-              data={trendBarData}
-              keys={['This Month', 'Last Month']}
-              indexBy="category"
-              theme={nivoTheme}
-              colors={[colors[0], colors[7]]}
-              groupMode="grouped"
-              padding={0.3}
-              borderRadius={4}
-              margin={{ top: 10, right: 10, bottom: 60, left: 60 }}
-              axisBottom={{ tickRotation: -30 }}
-              axisLeft={{ format: (v: number) => `$${(v / 1000).toFixed(0)}k` }}
-              labelSkipHeight={25}
-              enableGridX={false}
-            />
+            <Deferred fallback={<Skeleton className="h-64 w-full rounded-lg" />}>
+              <ResponsiveBar
+                data={trendBarData}
+                keys={['This Month', 'Last Month']}
+                indexBy="category"
+                theme={nivoTheme}
+                colors={[colors[0], colors[7]]}
+                groupMode="grouped"
+                padding={0.3}
+                borderRadius={4}
+                margin={{ top: 10, right: 10, bottom: 60, left: 60 }}
+                axisBottom={{ tickRotation: -30 }}
+                axisLeft={{ format: (v: number) => `$${(v / 1000).toFixed(0)}k` }}
+                labelSkipHeight={25}
+                enableGridX={false}
+              />
+            </Deferred>
           </div>
         )}
       </Card.Content>
