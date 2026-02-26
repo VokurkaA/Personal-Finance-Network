@@ -6,7 +6,21 @@ import { MoneyFlowCard } from '../../components/analytics/MoneyFlowCard'
 import { AnomalyListCard } from '../../components/analytics/AnomalyListCard'
 import { SpendingPatternsCard } from '../../components/analytics/SpendingPatternsCard'
 
+import {
+  spendingFlowQueryOptions,
+  anomaliesQueryOptions,
+  spendingPatternsQueryOptions,
+} from '../../queries/useAnalytics'
+
 export const Route = createFileRoute('/analytics/')({
+  loader: ({ context: { queryClient } }) => {
+    const month = currentMonth()
+    return Promise.all([
+      queryClient.ensureQueryData(spendingFlowQueryOptions(month)),
+      queryClient.ensureQueryData(anomaliesQueryOptions(0.9)),
+      queryClient.ensureQueryData(spendingPatternsQueryOptions(3)),
+    ])
+  },
   component: AnalyticsIndexPage,
 })
 

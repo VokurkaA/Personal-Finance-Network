@@ -1,13 +1,15 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { useQuery, useMutation, useQueryClient, queryOptions } from '@tanstack/react-query'
 import { getAccounts, createAccount } from '../api/accounts'
 import { accountKeys } from './keys'
 import type { Account } from '../types/entities'
 
+export const accountsQueryOptions = queryOptions({
+  queryKey: accountKeys.all,
+  queryFn: getAccounts,
+})
+
 export function useAccounts() {
-  return useQuery({
-    queryKey: accountKeys.all,
-    queryFn: getAccounts,
-  })
+  return useQuery(accountsQueryOptions)
 }
 
 export function useCreateAccount() {

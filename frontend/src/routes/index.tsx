@@ -10,14 +10,22 @@ import {
   ArrowDownLeft,
   ArrowUpRight,
 } from 'lucide-react'
-import { useBudgetVsActual, useBudgets } from '../queries/useBudget'
-import { useCashflow } from '../queries/useAnalytics'
-import { useGoals } from '../queries/useGoals'
+import { useBudgetVsActual, useBudgets, budgetsQueryOptions } from '../queries/useBudget'
+import { useCashflow, cashflowQueryOptions } from '../queries/useAnalytics'
+import { useGoals, goalsQueryOptions } from '../queries/useGoals'
 import { useTheme } from '../context/ThemeContext'
 import { getNivoTheme, CHART_COLORS } from '../config/nivoTheme'
 import { Progress } from '../components/ui/Progress'
 
 export const Route = createFileRoute('/')({
+  loader: ({ context: { queryClient } }) => {
+    const month = currentMonth()
+    return Promise.all([
+      queryClient.ensureQueryData(cashflowQueryOptions(month)),
+      queryClient.ensureQueryData(goalsQueryOptions),
+      queryClient.ensureQueryData(budgetsQueryOptions),
+    ])
+  },
   component: DashboardPage,
 })
 

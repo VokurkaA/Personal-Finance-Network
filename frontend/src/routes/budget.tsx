@@ -2,12 +2,13 @@ import { createFileRoute } from '@tanstack/react-router'
 import { useState } from 'react'
 import { Card, Skeleton, ListBox, Select } from '@heroui/react'
 import { Plus } from 'lucide-react'
-import { useBudgets } from '../queries/useBudget'
+import { useBudgets, budgetsQueryOptions } from '../queries/useBudget'
 import { BudgetVsActualPanel } from '../components/budget/BudgetVsActualPanel'
 import { NewBudgetForm } from '../components/budget/NewBudgetForm'
 import { BudgetPlansList } from '../components/budget/BudgetPlansList'
 
 export const Route = createFileRoute('/budget')({
+  loader: ({ context: { queryClient } }) => queryClient.ensureQueryData(budgetsQueryOptions),
   component: BudgetPage,
 })
 

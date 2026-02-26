@@ -1,4 +1,4 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { useQuery, useMutation, useQueryClient, queryOptions } from '@tanstack/react-query'
 import {
   getTransactions,
   getTransaction,
@@ -9,19 +9,25 @@ import { transactionKeys } from './keys'
 import type { Transaction } from '../types/entities'
 import type { TransactionFilters } from '../types/api'
 
-export function useTransactions(filters: TransactionFilters = {}) {
-  return useQuery({
+export const transactionsQueryOptions = (filters: TransactionFilters = {}) =>
+  queryOptions({
     queryKey: transactionKeys.list(filters),
     queryFn: () => getTransactions(filters),
   })
-}
 
-export function useTransaction(id: string) {
-  return useQuery({
+export const transactionDetailQueryOptions = (id: string) =>
+  queryOptions({
     queryKey: transactionKeys.detail(id),
     queryFn: () => getTransaction(id),
     enabled: Boolean(id),
   })
+
+export function useTransactions(filters: TransactionFilters = {}) {
+  return useQuery(transactionsQueryOptions(filters))
+}
+
+export function useTransaction(id: string) {
+  return useQuery(transactionDetailQueryOptions(id))
 }
 
 export function useCreateTransaction() {

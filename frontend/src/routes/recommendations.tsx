@@ -5,6 +5,9 @@ import {
   useSavingsRecommendations,
   useInvestmentRecommendations,
   useBudgetAdjustment,
+  savingsRecommendationsQueryOptions,
+  investmentRecommendationsQueryOptions,
+  budgetAdjustmentQueryOptions,
 } from '../queries/useRecommendations'
 import { fmt } from '../components/recommendations/recommendationUtils'
 import { SavingsCard } from '../components/recommendations/SavingsCard'
@@ -13,6 +16,12 @@ import { BudgetAdjustCard } from '../components/recommendations/BudgetAdjustCard
 import { AccordionSection } from '../components/recommendations/AccordionSection'
 
 export const Route = createFileRoute('/recommendations')({
+  loader: ({ context: { queryClient } }) =>
+    Promise.all([
+      queryClient.ensureQueryData(savingsRecommendationsQueryOptions),
+      queryClient.ensureQueryData(investmentRecommendationsQueryOptions),
+      queryClient.ensureQueryData(budgetAdjustmentQueryOptions('all')),
+    ]),
   component: RecommendationsPage,
 })
 

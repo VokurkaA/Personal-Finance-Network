@@ -1,13 +1,15 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { useQuery, useMutation, useQueryClient, queryOptions } from '@tanstack/react-query'
 import { getCards, createCard } from '../api/cards'
 import { cardKeys } from './keys'
 import type { Card } from '../types/entities'
 
+export const cardsQueryOptions = queryOptions({
+  queryKey: cardKeys.all,
+  queryFn: getCards,
+})
+
 export function useCards() {
-  return useQuery({
-    queryKey: cardKeys.all,
-    queryFn: getCards,
-  })
+  return useQuery(cardsQueryOptions)
 }
 
 export function useCreateCard() {

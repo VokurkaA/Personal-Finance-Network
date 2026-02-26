@@ -1,8 +1,11 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { useState } from 'react'
 import { Select, ListBox, Label } from '@heroui/react'
-import { useSpendingByCategory } from '../../queries/useAnalytics'
-import { useBudgets } from '../../queries/useBudget'
+import {
+  useSpendingByCategory,
+  spendingByCategoryQueryOptions,
+} from '../../queries/useAnalytics'
+import { useBudgets, budgetsQueryOptions } from '../../queries/useBudget'
 import { AnalyticsTabs } from '../../components/analytics/AnalyticsTabs'
 import { SpendingPieCard } from '../../components/analytics/SpendingPieCard'
 import { MoMBarCard } from '../../components/analytics/MoMBarCard'
@@ -11,6 +14,11 @@ import { CategoryTrendsCard } from '../../components/analytics/CategoryTrendsCar
 import { BudgetVsActualCard } from '../../components/analytics/BudgetVsActualCard'
 
 export const Route = createFileRoute('/analytics/spending')({
+  loader: ({ context: { queryClient } }) =>
+    Promise.all([
+      queryClient.ensureQueryData(spendingByCategoryQueryOptions(1)),
+      queryClient.ensureQueryData(budgetsQueryOptions),
+    ]),
   component: SpendingAnalyticsPage,
 })
 

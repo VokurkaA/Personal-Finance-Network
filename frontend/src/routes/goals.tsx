@@ -2,13 +2,14 @@ import { createFileRoute } from '@tanstack/react-router'
 import { useState, useMemo } from 'react'
 import { Button, Card, Skeleton } from '@heroui/react'
 import { Plus, Target } from 'lucide-react'
-import { useGoals } from '../queries/useGoals'
+import { useGoals, goalsQueryOptions } from '../queries/useGoals'
 import { GoalCard } from '../components/goals/GoalCard'
 import { GoalDetailModal } from '../components/goals/GoalDetailModal'
 import { AddGoalModal } from '../components/goals/AddGoalModal'
 import type { Goal } from '../types/entities'
 
 export const Route = createFileRoute('/goals')({
+  loader: ({ context: { queryClient } }) => queryClient.ensureQueryData(goalsQueryOptions),
   component: GoalsPage,
 })
 

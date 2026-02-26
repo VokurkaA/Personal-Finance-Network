@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, queryOptions } from '@tanstack/react-query'
 import {
   getSavingsRecommendations,
   getInvestmentRecommendations,
@@ -6,23 +6,30 @@ import {
 } from '../api/recommendations'
 import { recommendationKeys } from './keys'
 
-export function useSavingsRecommendations() {
-  return useQuery({
-    queryKey: recommendationKeys.savings,
-    queryFn: getSavingsRecommendations,
-  })
-}
+export const savingsRecommendationsQueryOptions = queryOptions({
+  queryKey: recommendationKeys.savings,
+  queryFn: getSavingsRecommendations,
+})
 
-export function useInvestmentRecommendations() {
-  return useQuery({
-    queryKey: recommendationKeys.investment,
-    queryFn: getInvestmentRecommendations,
-  })
-}
+export const investmentRecommendationsQueryOptions = queryOptions({
+  queryKey: recommendationKeys.investment,
+  queryFn: getInvestmentRecommendations,
+})
 
-export function useBudgetAdjustment(category?: string) {
-  return useQuery({
+export const budgetAdjustmentQueryOptions = (category?: string) =>
+  queryOptions({
     queryKey: recommendationKeys.adjustment(category),
     queryFn: () => getBudgetAdjustment(category),
   })
+
+export function useSavingsRecommendations() {
+  return useQuery(savingsRecommendationsQueryOptions)
+}
+
+export function useInvestmentRecommendations() {
+  return useQuery(investmentRecommendationsQueryOptions)
+}
+
+export function useBudgetAdjustment(category?: string) {
+  return useQuery(budgetAdjustmentQueryOptions(category))
 }

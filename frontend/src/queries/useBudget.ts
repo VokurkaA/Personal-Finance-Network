@@ -1,29 +1,37 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { useQuery, useMutation, useQueryClient, queryOptions } from '@tanstack/react-query'
 import { getBudgets, getBudget, getBudgetVsActual, createBudget } from '../api/budget'
 import { budgetKeys, transactionKeys } from './keys'
 import type { BudgetPlan } from '../types/entities'
 
-export function useBudgets() {
-  return useQuery({
-    queryKey: budgetKeys.all,
-    queryFn: getBudgets,
-  })
-}
+export const budgetsQueryOptions = queryOptions({
+  queryKey: budgetKeys.all,
+  queryFn: getBudgets,
+})
 
-export function useBudget(id: string) {
-  return useQuery({
+export const budgetDetailQueryOptions = (id: string) =>
+  queryOptions({
     queryKey: budgetKeys.detail(id),
     queryFn: () => getBudget(id),
     enabled: Boolean(id),
   })
-}
 
-export function useBudgetVsActual(id: string, category = 'all') {
-  return useQuery({
+export const budgetVsActualQueryOptions = (id: string, category = 'all') =>
+  queryOptions({
     queryKey: budgetKeys.vsActual(id, category),
     queryFn: () => getBudgetVsActual(id, category),
     enabled: Boolean(id),
   })
+
+export function useBudgets() {
+  return useQuery(budgetsQueryOptions)
+}
+
+export function useBudget(id: string) {
+  return useQuery(budgetDetailQueryOptions(id))
+}
+
+export function useBudgetVsActual(id: string, category = 'all') {
+  return useQuery(budgetVsActualQueryOptions(id, category))
 }
 
 export function useCreateBudget() {
