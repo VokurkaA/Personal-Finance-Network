@@ -6,6 +6,13 @@ import { useTheme } from '../../context/ThemeContext'
 import { getNivoTheme } from '../../config/nivoTheme'
 
 type PatternRow = { id: string; data: { x: string; y: number }[] }
+type BackendPattern = {
+  category: string
+  monthlyData: Record<string, number>
+  averageMonthly: number
+  isRecurring: boolean
+  months: number
+}
 
 export function SpendingPatternsCard() {
   const { theme } = useTheme()
@@ -14,7 +21,14 @@ export function SpendingPatternsCard() {
 
   const patternsRaw = useStore(analyticsStore, (s) => s.spendingPatterns[3])
   const isLoading = !patternsRaw
-  const patterns = (patternsRaw as PatternRow[] | undefined) ?? []
+  const patterns: PatternRow[] = patternsRaw
+    ? (patternsRaw as BackendPattern[]).map((p) => ({
+        id: p.category,
+        data: Object.entries(p.monthlyData ?? {})
+          .sort((a, b) => a[0].localeCompare(b[0]))
+          .map(([month, amount]) => ({ x: month, y: amount })),
+      }))
+    : []
 
   return (
     <Card>
