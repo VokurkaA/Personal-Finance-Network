@@ -2,8 +2,7 @@ import { Card, Skeleton } from '@heroui/react'
 import { ResponsiveHeatMap } from '@nivo/heatmap'
 import { useStore } from '@tanstack/react-store'
 import { analyticsStore } from '../../store/analyticsStore'
-import { useTheme } from '../../context/ThemeContext'
-import { getNivoTheme } from '../../config/nivoTheme'
+import { useResolvedChartTheme } from '../../config/nivoTheme'
 
 type PatternRow = { id: string; data: { x: string; y: number }[] }
 type BackendPattern = {
@@ -15,9 +14,7 @@ type BackendPattern = {
 }
 
 export function SpendingPatternsCard() {
-  const { theme } = useTheme()
-  const isDark = theme === 'dark'
-  const nivoTheme = getNivoTheme(isDark)
+  const { theme: nivoTheme } = useResolvedChartTheme()
 
   const patternsRaw = useStore(analyticsStore, (s) => s.spendingPatterns[3])
   const isLoading = !patternsRaw
@@ -37,24 +34,50 @@ export function SpendingPatternsCard() {
       </Card.Header>
       <Card.Content>
         {isLoading ? (
-          <Skeleton className="h-48 w-full rounded-lg" />
+          <Skeleton className="h-64 w-full rounded-lg" />
         ) : patterns.length === 0 ? (
-          <div className="flex h-48 items-center justify-center text-foreground-400 text-sm">
+          <div className="flex h-64 items-center justify-center text-muted text-sm italic">
             No pattern data available
           </div>
         ) : (
-          <div className="h-48">
+          <div className="h-64">
             <ResponsiveHeatMap
               data={patterns}
               theme={nivoTheme}
-              colors={{ type: 'sequential', scheme: 'blues' }}
-              margin={{ top: 20, right: 60, bottom: 60, left: 80 }}
+              colors={{
+                type: 'quantize',
+                steps: 7,
+                colors: [
+                  '#f4f4f5', // zinc-100 (fallback)
+                  '#dcfce7', // green-100
+                  '#bbf7d0', // green-200
+                  '#86efac', // green-300
+                  '#4ade80', // green-400
+                  '#22c55e', // green-500
+                  '#16a34a', // green-600
+                ],
+              }}
+              // Dynamically use accent color if possible, but for heatmap a sequential scale is better
+              // HeroUI accent is typically blue/indigo, let's use a nice blue scale that fits the vibe
+              margin={{ top: 30, right: 30, bottom: 60, left: 100 }}
               axisTop={null}
-              axisLeft={{ tickSize: 5 }}
-              axisBottom={{ tickRotation: -30 }}
-              borderRadius={2}
-              borderWidth={2}
-              borderColor={isDark ? '#18181b' : '#f4f4f5'}
+              axisLeft={{
+                tickSize: 5,
+                tickPadding: 5,
+                tickRotation: 0,
+                legend: '',
+                legendPosition: 'middle',
+                legendOffset: -40,
+              }}
+              axisBottom={{
+                tickRotation: -30,
+                tickPadding: 10,
+              }}
+              borderRadius={4}
+              borderWidth={1}
+              borderColor={nivoTheme.background}
+              enableLabels={false}
+              hoverTarget="cell"
             />
           </div>
         )}

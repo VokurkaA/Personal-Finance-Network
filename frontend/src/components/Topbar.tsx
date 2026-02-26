@@ -55,9 +55,10 @@ export function Topbar({ onMenuClick }: TopbarProps) {
         <div className="hidden md:block">
           <Select
             aria-label="Select account"
-            selectedKey={accountId ?? 'all'}
-            onSelectionChange={(key) => selectAccount(key === 'all' ? null : (key as string))}
+            value={accountId ?? 'all'}
+            onChange={(key) => selectAccount(key === 'all' ? null : (key as string))}
             className="w-44"
+            variant="secondary"
           >
             <Select.Trigger>
               <Select.Value />
@@ -65,9 +66,11 @@ export function Topbar({ onMenuClick }: TopbarProps) {
             </Select.Trigger>
             <Select.Popover>
               <ListBox>
-                <ListBox.Item id="all">All accounts</ListBox.Item>
+                <ListBox.Item id="all" textValue="All accounts">
+                  All accounts
+                </ListBox.Item>
                 {accounts.map((acc) => (
-                  <ListBox.Item key={acc.id} id={acc.id}>
+                  <ListBox.Item key={acc.id} id={acc.id} textValue={acc.name}>
                     {acc.name}
                   </ListBox.Item>
                 ))}

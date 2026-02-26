@@ -4,8 +4,7 @@ import { ResponsiveSankey } from '@nivo/sankey'
 import { useStore } from '@tanstack/react-store'
 import { analyticsStore } from '../../store/analyticsStore'
 import { useSpendingFlow } from '../../queries/useAnalytics'
-import { useTheme } from '../../context/ThemeContext'
-import { getNivoTheme, CHART_COLORS } from '../../config/nivoTheme'
+import { useResolvedChartTheme } from '../../config/nivoTheme'
 import type { SpendingFlowResponse } from '../../types/api'
 
 function buildSankeyData(flow: SpendingFlowResponse) {
@@ -16,8 +15,7 @@ function buildSankeyData(flow: SpendingFlowResponse) {
 }
 
 export function MoneyFlowCard({ month }: { month: string }) {
-  const { theme } = useTheme()
-  const nivoTheme = getNivoTheme(theme === 'dark')
+  const { theme: nivoTheme, colors } = useResolvedChartTheme()
 
   const { isLoading: flowLoading } = useSpendingFlow(month)
   const flow = useStore(analyticsStore, (s) => s.spendingFlow[month])
@@ -42,7 +40,7 @@ export function MoneyFlowCard({ month }: { month: string }) {
             <ResponsiveSankey
               data={sankeyData}
               theme={nivoTheme}
-              colors={CHART_COLORS}
+              colors={colors}
               nodeOpacity={1}
               nodeThickness={18}
               nodeInnerPadding={3}
@@ -54,6 +52,7 @@ export function MoneyFlowCard({ month }: { month: string }) {
               labelOrientation="horizontal"
               labelPadding={16}
               margin={{ top: 10, right: 140, bottom: 10, left: 140 }}
+              labelTextColor={nivoTheme.text?.fill}
             />
           </div>
         )}

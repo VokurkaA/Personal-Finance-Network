@@ -1,6 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { lazy, Suspense, memo } from 'react'
-import { Card, Chip, Skeleton } from '@heroui/react'
+import { Card, Chip, Skeleton, Link } from '@heroui/react'
 import {
   TrendingUp,
   TrendingDown,
@@ -41,27 +41,21 @@ const TrendChip = memo(function TrendChip({ direction }: { direction: 'up' | 'do
   if (direction === 'up')
     return (
       <Chip color="success" variant="soft" size="sm">
-        <span className="flex items-center gap-1">
-          <TrendingUp className="w-3 h-3" />
-          Up
-        </span>
+        <TrendingUp className="w-3 h-3" />
+        <Chip.Label>Up</Chip.Label>
       </Chip>
     )
   if (direction === 'down')
     return (
       <Chip color="danger" variant="soft" size="sm">
-        <span className="flex items-center gap-1">
-          <TrendingDown className="w-3 h-3" />
-          Down
-        </span>
+        <TrendingDown className="w-3 h-3" />
+        <Chip.Label>Down</Chip.Label>
       </Chip>
     )
   return (
     <Chip color="default" variant="soft" size="sm">
-      <span className="flex items-center gap-1">
-        <Minus className="w-3 h-3" />
-        Stable
-      </span>
+      <Minus className="w-3 h-3" />
+      <Chip.Label>Stable</Chip.Label>
     </Chip>
   )
 })
@@ -236,7 +230,7 @@ function DashboardPage() {
                 <div className="flex items-start justify-between gap-2">
                   <p className="font-semibold text-sm leading-tight">{nearestGoal.name}</p>
                   <Chip size="sm" variant="soft" color="accent" className="shrink-0">
-                    {nearestGoal.type}
+                    <Chip.Label>{nearestGoal.type}</Chip.Label>
                   </Chip>
                 </div>
                 <Progress
@@ -266,9 +260,9 @@ function DashboardPage() {
           <Card.Content>
             <p className="text-sm text-foreground-400">
               No budget plan found for {month}. Create one on the{' '}
-              <a href="/budget" className="text-primary underline">
+              <Link href="/budget" className="text-sm no-underline hover:underline">
                 Budget
-              </a>{' '}
+              </Link>{' '}
               page.
             </p>
           </Card.Content>

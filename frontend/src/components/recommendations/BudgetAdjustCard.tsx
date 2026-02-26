@@ -1,4 +1,4 @@
-import { Card, Chip, Button } from '@heroui/react'
+import { Card, Chip, Button, toast } from '@heroui/react'
 import { ArrowRight } from 'lucide-react'
 import type { BudgetAdjustmentSuggestion } from '../../types/api'
 import { fmt } from './recommendationUtils'
@@ -30,7 +30,11 @@ export function BudgetAdjustCard({ rec }: { rec: BudgetAdjustmentSuggestion }) {
             <p className="text-xs text-foreground-400">Suggested</p>
             <p className="font-bold">{fmt(rec.suggestedBudget)}</p>
           </div>
-          <Button size="sm" variant="ghost">
+          <Button
+            size="sm"
+            variant="ghost"
+            onPress={() => toast.success(`Applied budget adjust for ${rec.category}`)}
+          >
             Apply <ArrowRight className="w-3 h-3 ml-1" />
           </Button>
         </div>

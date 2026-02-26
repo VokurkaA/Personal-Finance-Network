@@ -1,4 +1,4 @@
-import { Card, Chip, Button } from '@heroui/react'
+import { Card, Chip, Button, toast } from '@heroui/react'
 import { ArrowRight } from 'lucide-react'
 import type { SavingsRecommendation } from '../../types/api'
 import { fmt, PRIORITY_COLOR } from './recommendationUtils'
@@ -32,7 +32,7 @@ export function SavingsCard({ rec }: { rec: SavingsRecommendation }) {
             <p className="text-xs text-foreground-400">Potential savings</p>
             <p className="font-bold text-success">{fmt(rec.potentialSavings)}</p>
           </div>
-          <Button size="sm" variant="ghost">
+          <Button size="sm" variant="ghost" onPress={() => toast.success(`Applied: ${rec.title}`)}>
             Apply <ArrowRight className="w-3 h-3 ml-1" />
           </Button>
         </div>

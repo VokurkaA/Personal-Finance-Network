@@ -11,6 +11,7 @@ interface AppDatePickerProps {
   required?: boolean
   /** Extra classes for the trigger button */
   className?: string
+  variant?: 'primary' | 'secondary'
 }
 
 function fmt(iso: string) {
@@ -21,7 +22,14 @@ function fmt(iso: string) {
   })
 }
 
-export function AppDatePicker({ label, value, onChange, required, className }: AppDatePickerProps) {
+export function AppDatePicker({
+  label,
+  value,
+  onChange,
+  required,
+  className,
+  variant = 'primary',
+}: AppDatePickerProps) {
   const parsed = value ? parseDate(value) : null
   const triggerRef = useRef<HTMLButtonElement>(null)
 
@@ -32,12 +40,14 @@ export function AppDatePicker({ label, value, onChange, required, className }: A
         value={parsed}
         onChange={(val: DateValue | null) => onChange(val?.toString() ?? undefined)}
         isRequired={required}
+        aria-label={label ?? 'Date picker'}
       >
         <DatePicker.Trigger
           ref={triggerRef}
-          className={`flex items-center gap-2 h-9 px-3 w-40 rounded-medium border border-divider bg-content1 text-sm
+          className={`flex items-center gap-2 h-9 px-3 w-40 rounded-medium border border-divider text-sm
             hover:border-foreground-400 transition-colors
             focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary
+            ${variant === 'secondary' ? 'bg-surface-secondary shadow-none' : 'bg-surface shadow-sm'}
             ${className ?? ''}`}
         >
           <span className="flex-1 text-left truncate">

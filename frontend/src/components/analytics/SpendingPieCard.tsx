@@ -3,13 +3,10 @@ import { ResponsivePie } from '@nivo/pie'
 import { useStore } from '@tanstack/react-store'
 import { analyticsStore } from '../../store/analyticsStore'
 import { useSpendingByCategory } from '../../queries/useAnalytics'
-import { useTheme } from '../../context/ThemeContext'
-import { getNivoTheme, CHART_COLORS } from '../../config/nivoTheme'
+import { useResolvedChartTheme } from '../../config/nivoTheme'
 
 export function SpendingPieCard({ months }: { months: number }) {
-  const { theme } = useTheme()
-  const isDark = theme === 'dark'
-  const nivoTheme = getNivoTheme(isDark)
+  const { theme: nivoTheme, colors } = useResolvedChartTheme()
 
   const { isLoading } = useSpendingByCategory(months)
   const spendingItems = useStore(analyticsStore, (s) => s.spendingByCategory[months] ?? [])
@@ -18,7 +15,7 @@ export function SpendingPieCard({ months }: { months: number }) {
     id: item.category,
     label: item.category,
     value: item.thisMonth,
-    color: CHART_COLORS[i % CHART_COLORS.length],
+    color: colors[i % colors.length],
   }))
 
   return (
@@ -38,13 +35,13 @@ export function SpendingPieCard({ months }: { months: number }) {
             <ResponsivePie
               data={pieData}
               theme={nivoTheme}
-              colors={CHART_COLORS}
+              colors={colors}
               innerRadius={0.55}
               padAngle={2}
               cornerRadius={4}
               margin={{ top: 20, right: 80, bottom: 20, left: 80 }}
               enableArcLinkLabels
-              arcLinkLabelsTextColor={isDark ? '#a1a1aa' : '#52525b'}
+              arcLinkLabelsTextColor={nivoTheme.text?.fill}
               arcLinkLabelsThickness={2}
               arcLabelsSkipAngle={12}
               legends={[

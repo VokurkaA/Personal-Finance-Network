@@ -52,6 +52,7 @@ export function NewBudgetForm({ month, onSuccess }: NewBudgetFormProps) {
               value={amounts[cat]}
               onChange={(e) => setAmounts((prev) => ({ ...prev, [cat]: e.target.value }))}
               min={0}
+              variant="secondary"
             />
           </div>
         ))}
@@ -60,11 +61,11 @@ export function NewBudgetForm({ month, onSuccess }: NewBudgetFormProps) {
         type="submit"
         variant="primary"
         size="sm"
-        isDisabled={isPending}
+        isPending={isPending}
         className="self-start"
       >
         <Save className="w-4 h-4 mr-1" />
-        {isPending ? 'Saving…' : 'Create Budget Plan'}
+        Create Budget Plan
       </Button>
     </form>
   )

@@ -3,12 +3,10 @@ import { ResponsiveBar } from '@nivo/bar'
 import { useStore } from '@tanstack/react-store'
 import { analyticsStore } from '../../store/analyticsStore'
 import { useSpendingByCategory } from '../../queries/useAnalytics'
-import { useTheme } from '../../context/ThemeContext'
-import { getNivoTheme, CHART_COLORS } from '../../config/nivoTheme'
+import { useResolvedChartTheme } from '../../config/nivoTheme'
 
 export function MoMBarCard({ months }: { months: number }) {
-  const { theme } = useTheme()
-  const nivoTheme = getNivoTheme(theme === 'dark')
+  const { theme: nivoTheme, colors } = useResolvedChartTheme()
 
   const { isLoading } = useSpendingByCategory(months)
   const spendingItems = useStore(analyticsStore, (s) => s.spendingByCategory[months] ?? [])
@@ -38,7 +36,7 @@ export function MoMBarCard({ months }: { months: number }) {
               keys={['This Month', 'Last Month']}
               indexBy="category"
               theme={nivoTheme}
-              colors={[CHART_COLORS[0], CHART_COLORS[1]]}
+              colors={[colors[0], colors[7]]}
               groupMode="grouped"
               padding={0.3}
               borderRadius={4}

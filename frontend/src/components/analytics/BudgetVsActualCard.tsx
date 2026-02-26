@@ -1,10 +1,9 @@
-import { Card, Skeleton } from '@heroui/react'
+import { Card, Skeleton, Link } from '@heroui/react'
 import { ResponsiveBar } from '@nivo/bar'
 import { useStore } from '@tanstack/react-store'
 import { budgetsStore } from '../../store/budgetsStore'
 import { useBudgetVsActual } from '../../queries/useBudget'
-import { useTheme } from '../../context/ThemeContext'
-import { getNivoTheme, CHART_COLORS } from '../../config/nivoTheme'
+import { useResolvedChartTheme } from '../../config/nivoTheme'
 
 interface BudgetVsActualCardProps {
   budgetId: string | undefined
@@ -12,8 +11,7 @@ interface BudgetVsActualCardProps {
 }
 
 function BudgetBarChart({ budgetId }: { budgetId: string }) {
-  const { theme } = useTheme()
-  const nivoTheme = getNivoTheme(theme === 'dark')
+  const { theme: nivoTheme, colors, danger } = useResolvedChartTheme()
 
   const { isLoading } = useBudgetVsActual(budgetId)
   const items = useStore(budgetsStore, (s) => s.budgetVsActual[budgetId] ?? [])
@@ -39,7 +37,7 @@ function BudgetBarChart({ budgetId }: { budgetId: string }) {
         keys={['Budget', 'Actual']}
         indexBy="category"
         theme={nivoTheme as never}
-        colors={[CHART_COLORS[0], CHART_COLORS[4]]}
+        colors={[colors[0], danger]}
         groupMode="grouped"
         padding={0.3}
         borderRadius={4}
@@ -63,9 +61,9 @@ export function BudgetVsActualCard({ budgetId, month }: BudgetVsActualCardProps)
         {!budgetId ? (
           <p className="text-sm text-foreground-400">
             No budget plan for {month}. Create one on the{' '}
-            <a href="/budget" className="text-primary underline">
+            <Link href="/budget" className="text-sm no-underline hover:underline">
               Budget
-            </a>{' '}
+            </Link>{' '}
             page.
           </p>
         ) : (

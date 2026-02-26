@@ -1,7 +1,6 @@
 import { memo } from 'react'
 import { ResponsiveBar } from '@nivo/bar'
-import { useTheme } from '../../context/ThemeContext'
-import { getNivoTheme, CHART_COLORS } from '../../config/nivoTheme'
+import { useResolvedChartTheme } from '../../config/nivoTheme'
 
 interface CashflowBarChartProps {
   month: string
@@ -14,8 +13,7 @@ export const CashflowBarChart = memo(function CashflowBarChart({
   totalIncome,
   totalExpenses,
 }: CashflowBarChartProps) {
-  const { theme } = useTheme()
-  const nivoTheme = getNivoTheme(theme === 'dark')
+  const { theme: nivoTheme, success, danger } = useResolvedChartTheme()
 
   const barData = [{ month, Income: totalIncome, Expenses: totalExpenses }]
 
@@ -26,7 +24,7 @@ export const CashflowBarChart = memo(function CashflowBarChart({
         keys={['Income', 'Expenses']}
         indexBy="month"
         theme={nivoTheme}
-        colors={[CHART_COLORS[2], CHART_COLORS[4]]}
+        colors={[success, danger]}
         groupMode="grouped"
         padding={0.5}
         borderRadius={4}
