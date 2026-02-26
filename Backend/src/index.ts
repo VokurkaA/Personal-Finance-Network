@@ -1,0 +1,40 @@
+import 'dotenv/config';
+import express from 'express';
+import cors from 'cors';
+import { closeDriver } from './db';
+import accountsRouter from './routes/accounts';
+import cardsRouter from './routes/cards';
+import transactionsRouter from './routes/transactions';
+import goalsRouter from './routes/goals';
+import budgetsRouter from './routes/budgets';
+import analyticsRouter from './routes/analytics';
+import recommendationsRouter from './routes/recommendations';
+
+const app = express();
+const PORT = process.env.PORT ?? 3000;
+
+app.use(cors());
+app.use(express.json());
+
+app.use('/api/accounts', accountsRouter);
+app.use('/api/cards', cardsRouter);
+app.use('/api/transactions', transactionsRouter);
+app.use('/api/goals', goalsRouter);
+app.use('/api/budgets', budgetsRouter);
+app.use('/api/analytics', analyticsRouter);
+app.use('/api/recommendations', recommendationsRouter);
+
+app.get('/api/health', (_req, res) => {
+  res.json({ status: 'ok', timestamp: new Date().toISOString() });
+});
+
+const server = app.listen(PORT, () => {
+  console.log(`Personal Finance Network API listening on http://localhost:${PORT}`);
+});
+
+process.on('SIGTERM', async () => {
+  server.close();
+  await closeDriver();
+});
+
+export default app;
