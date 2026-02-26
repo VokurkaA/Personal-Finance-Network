@@ -28,7 +28,7 @@ function currentYear() {
 
 /**
  * Triggers all initial data fetches at app startup.
- * Results are written into TanStack stores via useEffect in each hook.
+ * Results are cached in TanStack Query.
  * With staleTime: Infinity, subsequent hook calls (on route navigation) are no-ops.
  */
 export function useBootstrap() {

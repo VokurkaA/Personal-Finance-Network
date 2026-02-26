@@ -2,8 +2,7 @@ import { createFileRoute } from '@tanstack/react-router'
 import { useState } from 'react'
 import { Card, Skeleton, ListBox, Select } from '@heroui/react'
 import { Plus } from 'lucide-react'
-import { useStore } from '@tanstack/react-store'
-import { budgetsStore } from '../store/budgetsStore'
+import { useBudgets } from '../queries/useBudget'
 import { BudgetVsActualPanel } from '../components/budget/BudgetVsActualPanel'
 import { NewBudgetForm } from '../components/budget/NewBudgetForm'
 import { BudgetPlansList } from '../components/budget/BudgetPlansList'
@@ -18,8 +17,7 @@ function currentMonth() {
 
 function BudgetPage() {
   const [selectedMonth, setSelectedMonth] = useState(currentMonth())
-  const budgets = useStore(budgetsStore, (s) => s.data)
-  const budgetsLoading = useStore(budgetsStore, (s) => s.status !== 'success')
+  const { data: budgets = [], isLoading: budgetsLoading } = useBudgets()
 
   const currentBudget = budgets.find((b) => b.month === selectedMonth)
 

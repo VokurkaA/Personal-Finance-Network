@@ -1,7 +1,5 @@
 import { Card, Skeleton } from '@heroui/react'
 import { ResponsiveTreeMap } from '@nivo/treemap'
-import { useStore } from '@tanstack/react-store'
-import { analyticsStore } from '../../store/analyticsStore'
 import { useSpendingByCategory } from '../../queries/useAnalytics'
 import { useTheme } from '../../context/ThemeContext'
 import { getNivoTheme, CHART_COLORS } from '../../config/nivoTheme'
@@ -11,8 +9,7 @@ export function CategoryTreeMapCard({ months }: { months: number }) {
   const isDark = theme === 'dark'
   const nivoTheme = getNivoTheme(isDark)
 
-  const { isLoading } = useSpendingByCategory(months)
-  const spendingItems = useStore(analyticsStore, (s) => s.spendingByCategory[months] ?? [])
+  const { data: spendingItems = [], isLoading } = useSpendingByCategory(months)
 
   const treemapData = {
     id: 'spending',

@@ -1,7 +1,5 @@
 import { Card, Skeleton } from '@heroui/react'
 import { ResponsiveBar } from '@nivo/bar'
-import { useStore } from '@tanstack/react-store'
-import { analyticsStore } from '../../store/analyticsStore'
 import { useSpendingByCategory } from '../../queries/useAnalytics'
 import { useTheme } from '../../context/ThemeContext'
 import { getNivoTheme, CHART_COLORS } from '../../config/nivoTheme'
@@ -10,8 +8,7 @@ export function MoMBarCard({ months }: { months: number }) {
   const { theme } = useTheme()
   const nivoTheme = getNivoTheme(theme === 'dark')
 
-  const { isLoading } = useSpendingByCategory(months)
-  const spendingItems = useStore(analyticsStore, (s) => s.spendingByCategory[months] ?? [])
+  const { data: spendingItems = [], isLoading } = useSpendingByCategory(months)
 
   const trendBarData = spendingItems.map((item) => ({
     category: item.category.length > 10 ? item.category.slice(0, 10) + '…' : item.category,

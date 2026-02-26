@@ -1,10 +1,8 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { useState } from 'react'
 import { Select, ListBox, Label } from '@heroui/react'
-import { useStore } from '@tanstack/react-store'
-import { analyticsStore } from '../../store/analyticsStore'
-import { budgetsStore } from '../../store/budgetsStore'
 import { useSpendingByCategory } from '../../queries/useAnalytics'
+import { useBudgets } from '../../queries/useBudget'
 import { AnalyticsTabs } from '../../components/analytics/AnalyticsTabs'
 import { SpendingPieCard } from '../../components/analytics/SpendingPieCard'
 import { MoMBarCard } from '../../components/analytics/MoMBarCard'
@@ -24,11 +22,10 @@ function SpendingAnalyticsPage() {
   const [months, setMonths] = useState(1)
   const [selectedMonth] = useState(currentMonth())
 
-  const { isLoading: spendingLoading } = useSpendingByCategory(months)
-  const spendingItems = useStore(analyticsStore, (s) => s.spendingByCategory[months] ?? [])
+  const { data: spendingItems = [], isLoading: spendingLoading } = useSpendingByCategory(months)
   const totalThisMonth = spendingItems.reduce((s, i) => s + i.thisMonth, 0)
 
-  const budgets = useStore(budgetsStore, (s) => s.data)
+  const { data: budgets = [] } = useBudgets()
   const currentBudget = budgets.find((b) => b.month === selectedMonth)
 
   return (

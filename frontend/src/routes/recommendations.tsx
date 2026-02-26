@@ -1,8 +1,11 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { Card, Skeleton, Accordion } from '@heroui/react'
 import { PiggyBank, TrendingUp, SlidersHorizontal, Lightbulb } from 'lucide-react'
-import { useStore } from '@tanstack/react-store'
-import { recommendationsStore } from '../store/recommendationsStore'
+import {
+  useSavingsRecommendations,
+  useInvestmentRecommendations,
+  useBudgetAdjustment,
+} from '../queries/useRecommendations'
 import { fmt } from '../components/recommendations/recommendationUtils'
 import { SavingsCard } from '../components/recommendations/SavingsCard'
 import { InvestmentCard } from '../components/recommendations/InvestmentCard'
@@ -14,13 +17,12 @@ export const Route = createFileRoute('/recommendations')({
 })
 
 function RecommendationsPage() {
-  const savings = useStore(recommendationsStore, (s) => s.savings)
-  const totalPotentialSavings = useStore(recommendationsStore, (s) => s.totalPotentialSavings)
-  const savingsLoading = useStore(recommendationsStore, (s) => s.savingsStatus !== 'success')
-  const investments = useStore(recommendationsStore, (s) => s.investments)
-  const investLoading = useStore(recommendationsStore, (s) => s.investmentsStatus !== 'success')
-  const budgetAdjustments = useStore(recommendationsStore, (s) => s.budgetAdjustment['all'] ?? [])
-  const adjustLoading = !useStore(recommendationsStore, (s) => s.budgetAdjustment['all'])
+  const { data: savingsData, isLoading: savingsLoading } = useSavingsRecommendations()
+  const savings = savingsData?.recommendations ?? []
+  const totalPotentialSavings = savingsData?.totalPotentialSavings ?? 0
+
+  const { data: investments = [], isLoading: investLoading } = useInvestmentRecommendations()
+  const { data: budgetAdjustments = [], isLoading: adjustLoading } = useBudgetAdjustment('all')
 
   return (
     <div className="flex flex-col gap-6">

@@ -12,8 +12,6 @@ import {
 import { ResponsiveLine } from '@nivo/line'
 import { Target, Calendar, TrendingUp } from 'lucide-react'
 import { useGoalForecast, useGoalContributions } from '../../queries/useGoals'
-import { useStore } from '@tanstack/react-store'
-import { goalsStore } from '../../store/goalsStore'
 import { useTheme } from '../../context/ThemeContext'
 import { getNivoTheme, CHART_COLORS } from '../../config/nivoTheme'
 import { Progress } from '../ui/Progress'
@@ -31,10 +29,8 @@ export function GoalDetailModal({ goal, isOpen, onClose }: GoalDetailModalProps)
   const isDark = theme === 'dark'
   const nivoTheme = getNivoTheme(isDark)
 
-  const { isLoading: forecastLoading } = useGoalForecast(goal.id)
-  const forecast = useStore(goalsStore, (s) => s.forecasts[goal.id])
-  const { isLoading: contribLoading } = useGoalContributions(goal.id)
-  const contributions = useStore(goalsStore, (s) => s.contributions[goal.id] ?? [])
+  const { data: forecast, isLoading: forecastLoading } = useGoalForecast(goal.id)
+  const { data: contributions = [], isLoading: contribLoading } = useGoalContributions(goal.id)
 
   const today = new Date()
   const deadline = new Date(goal.deadline)

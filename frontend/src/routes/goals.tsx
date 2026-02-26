@@ -2,8 +2,7 @@ import { createFileRoute } from '@tanstack/react-router'
 import { useState, useMemo } from 'react'
 import { Button, Card, Skeleton } from '@heroui/react'
 import { Plus, Target } from 'lucide-react'
-import { useStore } from '@tanstack/react-store'
-import { goalsStore } from '../store/goalsStore'
+import { useGoals } from '../queries/useGoals'
 import { GoalCard } from '../components/goals/GoalCard'
 import { GoalDetailModal } from '../components/goals/GoalDetailModal'
 import { AddGoalModal } from '../components/goals/AddGoalModal'
@@ -18,9 +17,7 @@ const PAGE_LOAD_TIME = Date.now()
 function GoalsPage() {
   const [selectedGoal, setSelectedGoal] = useState<Goal | null>(null)
   const [addOpen, setAddOpen] = useState(false)
-  const goals = useStore(goalsStore, (s) => s.data)
-  const isLoading = useStore(goalsStore, (s) => s.status === 'idle' || s.status === 'loading')
-  const hasError = useStore(goalsStore, (s) => s.status === 'error')
+  const { data: goals = [], isLoading, isError: hasError } = useGoals()
   const sorted = useMemo(
     () =>
       goals.slice().sort((a, b) => new Date(a.deadline).getTime() - new Date(b.deadline).getTime()),
