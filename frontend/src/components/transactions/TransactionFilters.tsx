@@ -6,6 +6,7 @@ import {
   setTransactionFilter,
   resetTransactionFilters,
 } from '../../store/transactionFiltersStore'
+import { AppDatePicker } from '../ui/AppDatePicker'
 
 export function TransactionFilters() {
   const filters = useStore(transactionFiltersStore, (s) => s)
@@ -28,25 +29,17 @@ export function TransactionFilters() {
             />
           </div>
 
-          <div className="flex flex-col gap-1">
-            <Label className="text-xs font-medium">From</Label>
-            <Input
-              type="date"
-              className="w-40"
-              value={filters.startDate ?? ''}
-              onChange={(e) => setTransactionFilter('startDate', e.target.value || undefined)}
-            />
-          </div>
+          <AppDatePicker
+            label="From"
+            value={filters.startDate}
+            onChange={(val) => setTransactionFilter('startDate', val)}
+          />
 
-          <div className="flex flex-col gap-1">
-            <Label className="text-xs font-medium">To</Label>
-            <Input
-              type="date"
-              className="w-40"
-              value={filters.endDate ?? ''}
-              onChange={(e) => setTransactionFilter('endDate', e.target.value || undefined)}
-            />
-          </div>
+          <AppDatePicker
+            label="To"
+            value={filters.endDate}
+            onChange={(val) => setTransactionFilter('endDate', val)}
+          />
 
           <div className="flex flex-col gap-1">
             <Label className="text-xs font-medium">Type</Label>

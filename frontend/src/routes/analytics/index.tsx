@@ -1,10 +1,21 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { useState } from 'react'
-import { Select, ListBox, Label } from '@heroui/react'
+import { useState, lazy, Suspense } from 'react'
+import { Select, ListBox, Label, Skeleton } from '@heroui/react'
 import { AnalyticsTabs } from '../../components/analytics/AnalyticsTabs'
-import { MoneyFlowCard } from '../../components/analytics/MoneyFlowCard'
-import { AnomalyListCard } from '../../components/analytics/AnomalyListCard'
-import { SpendingPatternsCard } from '../../components/analytics/SpendingPatternsCard'
+
+const MoneyFlowCard = lazy(() =>
+  import('../../components/analytics/MoneyFlowCard').then((m) => ({ default: m.MoneyFlowCard })),
+)
+const AnomalyListCard = lazy(() =>
+  import('../../components/analytics/AnomalyListCard').then((m) => ({
+    default: m.AnomalyListCard,
+  })),
+)
+const SpendingPatternsCard = lazy(() =>
+  import('../../components/analytics/SpendingPatternsCard').then((m) => ({
+    default: m.SpendingPatternsCard,
+  })),
+)
 
 export const Route = createFileRoute('/analytics/')({
   component: AnalyticsIndexPage,
@@ -51,9 +62,15 @@ function AnalyticsIndexPage() {
         </Select>
       </div>
 
-      <MoneyFlowCard month={month} />
-      <AnomalyListCard />
-      <SpendingPatternsCard />
+      <Suspense fallback={<Skeleton className="h-72 w-full rounded-lg" />}>
+        <MoneyFlowCard month={month} />
+      </Suspense>
+      <Suspense fallback={<Skeleton className="h-48 w-full rounded-lg" />}>
+        <AnomalyListCard />
+      </Suspense>
+      <Suspense fallback={<Skeleton className="h-48 w-full rounded-lg" />}>
+        <SpendingPatternsCard />
+      </Suspense>
     </div>
   )
 }

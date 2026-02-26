@@ -1,16 +1,35 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { useState } from 'react'
-import { Select, ListBox, Label } from '@heroui/react'
+import { useState, lazy, Suspense } from 'react'
+import { Select, ListBox, Label, Skeleton } from '@heroui/react'
 import { useStore } from '@tanstack/react-store'
 import { analyticsStore } from '../../store/analyticsStore'
 import { budgetsStore } from '../../store/budgetsStore'
 import { useSpendingByCategory } from '../../queries/useAnalytics'
 import { AnalyticsTabs } from '../../components/analytics/AnalyticsTabs'
-import { SpendingPieCard } from '../../components/analytics/SpendingPieCard'
-import { MoMBarCard } from '../../components/analytics/MoMBarCard'
-import { CategoryTreeMapCard } from '../../components/analytics/CategoryTreeMapCard'
-import { CategoryTrendsCard } from '../../components/analytics/CategoryTrendsCard'
-import { BudgetVsActualCard } from '../../components/analytics/BudgetVsActualCard'
+
+const SpendingPieCard = lazy(() =>
+  import('../../components/analytics/SpendingPieCard').then((m) => ({
+    default: m.SpendingPieCard,
+  })),
+)
+const MoMBarCard = lazy(() =>
+  import('../../components/analytics/MoMBarCard').then((m) => ({ default: m.MoMBarCard })),
+)
+const CategoryTreeMapCard = lazy(() =>
+  import('../../components/analytics/CategoryTreeMapCard').then((m) => ({
+    default: m.CategoryTreeMapCard,
+  })),
+)
+const CategoryTrendsCard = lazy(() =>
+  import('../../components/analytics/CategoryTrendsCard').then((m) => ({
+    default: m.CategoryTrendsCard,
+  })),
+)
+const BudgetVsActualCard = lazy(() =>
+  import('../../components/analytics/BudgetVsActualCard').then((m) => ({
+    default: m.BudgetVsActualCard,
+  })),
+)
 
 export const Route = createFileRoute('/analytics/spending')({
   component: SpendingAnalyticsPage,
@@ -67,15 +86,25 @@ function SpendingAnalyticsPage() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <SpendingPieCard months={months} />
-        <MoMBarCard months={months} />
+        <Suspense fallback={<Skeleton className="h-64 w-full rounded-lg" />}>
+          <SpendingPieCard months={months} />
+        </Suspense>
+        <Suspense fallback={<Skeleton className="h-64 w-full rounded-lg" />}>
+          <MoMBarCard months={months} />
+        </Suspense>
       </div>
 
-      <CategoryTreeMapCard months={months} />
+      <Suspense fallback={<Skeleton className="h-64 w-full rounded-lg" />}>
+        <CategoryTreeMapCard months={months} />
+      </Suspense>
 
-      <BudgetVsActualCard budgetId={currentBudget?.id} month={selectedMonth} />
+      <Suspense fallback={<Skeleton className="h-48 w-full rounded-lg" />}>
+        <BudgetVsActualCard budgetId={currentBudget?.id} month={selectedMonth} />
+      </Suspense>
 
-      <CategoryTrendsCard months={months} />
+      <Suspense fallback={<Skeleton className="h-64 w-full rounded-lg" />}>
+        <CategoryTrendsCard months={months} />
+      </Suspense>
     </div>
   )
 }

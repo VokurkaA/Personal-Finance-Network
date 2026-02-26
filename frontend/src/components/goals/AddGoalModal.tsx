@@ -15,6 +15,7 @@ import {
 } from '@heroui/react'
 import { useCreateGoal } from '../../queries/useGoals'
 import type { Goal } from '../../types/entities'
+import { AppDatePicker } from '../ui/AppDatePicker'
 
 interface AddGoalModalProps {
   isOpen: boolean
@@ -135,15 +136,12 @@ export function AddGoalModal({ isOpen, onClose }: AddGoalModalProps) {
                     />
                   </div>
                 </div>
-                <div className="flex flex-col gap-1">
-                  <Label className="text-xs font-medium">Deadline</Label>
-                  <Input
-                    type="date"
-                    required
-                    value={form.deadline}
-                    onChange={(e) => setField('deadline', e.target.value)}
-                  />
-                </div>
+                <AppDatePicker
+                  label="Deadline"
+                  value={form.deadline || undefined}
+                  onChange={(val) => setField('deadline', val ?? '')}
+                  required
+                />
               </ModalBody>
               <ModalFooter>
                 <Button variant="ghost" size="sm" type="button" onPress={onClose}>

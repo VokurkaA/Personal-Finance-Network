@@ -1,4 +1,5 @@
-import { Link, useRouterState } from '@tanstack/react-router'
+import { useNavigate, useRouterState } from '@tanstack/react-router'
+import { startTransition } from 'react'
 
 const TABS = [
   { to: '/analytics', label: 'Money Flow', exact: true },
@@ -6,6 +7,7 @@ const TABS = [
 ] as const
 
 export function AnalyticsTabs() {
+  const navigate = useNavigate()
   const pathname = useRouterState({ select: (s) => s.location.pathname })
 
   return (
@@ -13,9 +15,9 @@ export function AnalyticsTabs() {
       {TABS.map(({ to, label, exact }) => {
         const isActive = exact ? pathname === to : pathname.startsWith(to)
         return (
-          <Link
+          <button
             key={to}
-            to={to}
+            onClick={() => startTransition(() => navigate({ to }))}
             className={`px-4 py-2 text-sm font-medium transition-colors -mb-px border-b-2 ${
               isActive
                 ? 'border-primary text-primary'
@@ -23,7 +25,7 @@ export function AnalyticsTabs() {
             }`}
           >
             {label}
-          </Link>
+          </button>
         )
       })}
     </div>

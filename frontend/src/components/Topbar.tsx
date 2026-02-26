@@ -22,9 +22,16 @@ export function Topbar({ onMenuClick }: TopbarProps) {
   const title = usePageTitle()
   const { data: accounts = [] } = useAccounts()
   const accountId = useStore(selectedAccountStore, (s) => s.accountId)
+  const isNavigating = useRouterState({ select: (s) => s.status === 'pending' })
 
   return (
     <header className="sticky top-0 z-40 flex h-14 items-center gap-3 border-b border-divider bg-background/80 backdrop-blur-md px-4 shrink-0">
+      {/* Navigation loading bar */}
+      {isNavigating && (
+        <div className="absolute bottom-0 left-0 right-0 h-0.5 overflow-hidden">
+          <div className="h-full bg-primary animate-[navprogress_1s_ease-in-out_infinite]" />
+        </div>
+      )}
       {/* Hamburger — mobile only */}
       <Button
         isIconOnly

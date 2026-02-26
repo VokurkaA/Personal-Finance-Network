@@ -1,4 +1,5 @@
-import { Link } from '@tanstack/react-router'
+import { useNavigate, useRouterState } from '@tanstack/react-router'
+import { startTransition } from 'react'
 import { Button, ScrollShadow } from '@heroui/react'
 import { Sun, Moon, TrendingUp, X } from 'lucide-react'
 import { useTheme } from '../context/ThemeContext'
@@ -10,25 +11,32 @@ interface SidebarProps {
 }
 
 function NavLinks({ onClose }: { onClose?: () => void }) {
+  const navigate = useNavigate()
+  const pathname = useRouterState({ select: (s) => s.location.pathname })
+
   return (
     <ScrollShadow className="flex-1">
       <nav className="px-3 py-4 space-y-1">
-        {NAV_ITEMS.map(({ to, label, icon: Icon }) => (
-          <Link
-            key={to}
-            to={to}
-            activeOptions={{ exact: to === '/' }}
-            activeProps={{ className: 'bg-primary/10 text-primary font-semibold' }}
-            inactiveProps={{
-              className: 'text-foreground-500 hover:bg-default-100 hover:text-foreground',
-            }}
-            className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors"
-            onClick={onClose}
-          >
-            <Icon className="h-4 w-4 shrink-0" />
-            {label}
-          </Link>
-        ))}
+        {NAV_ITEMS.map(({ to, label, icon: Icon }) => {
+          const isActive = to === '/' ? pathname === to : pathname.startsWith(to)
+          return (
+            <button
+              key={to}
+              onClick={() => {
+                startTransition(() => navigate({ to }))
+                onClose?.()
+              }}
+              className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors w-full ${
+                isActive
+                  ? 'bg-primary/10 text-primary font-semibold'
+                  : 'text-foreground-500 hover:bg-default-100 hover:text-foreground'
+              }`}
+            >
+              <Icon className="h-4 w-4 shrink-0" />
+              {label}
+            </button>
+          )
+        })}
       </nav>
     </ScrollShadow>
   )
