@@ -7,18 +7,18 @@ import { Toast } from '@heroui/react'
 import { Sidebar } from '../components/Sidebar'
 import { Topbar } from '../components/Topbar'
 import { uiStore, openSidebar, closeSidebar } from '../store/uiStore'
-import { useBootstrap } from '../queries/useBootstrap'
+import { accountsQueryOptions } from '../queries/useAccounts'
 
 interface RouterContext {
   queryClient: QueryClient
 }
 
 export const Route = createRootRouteWithContext<RouterContext>()({
+  loader: ({ context: { queryClient } }) => queryClient.ensureQueryData(accountsQueryOptions),
   component: RootComponent,
 })
 
 function AppShell() {
-  useBootstrap()
   const sidebarOpen = useStore(uiStore, (s) => s.sidebarOpen)
 
   return (

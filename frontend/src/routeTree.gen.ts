@@ -22,22 +22,24 @@ const TransactionsRoute = TransactionsRouteImport.update({
   id: '/transactions',
   path: '/transactions',
   getParentRoute: () => rootRouteImport,
-} as any)
+} as any).lazy(() => import('./routes/transactions.lazy').then((d) => d.Route))
 const RecommendationsRoute = RecommendationsRouteImport.update({
   id: '/recommendations',
   path: '/recommendations',
   getParentRoute: () => rootRouteImport,
-} as any)
+} as any).lazy(() =>
+  import('./routes/recommendations.lazy').then((d) => d.Route),
+)
 const GoalsRoute = GoalsRouteImport.update({
   id: '/goals',
   path: '/goals',
   getParentRoute: () => rootRouteImport,
-} as any)
+} as any).lazy(() => import('./routes/goals.lazy').then((d) => d.Route))
 const BudgetRoute = BudgetRouteImport.update({
   id: '/budget',
   path: '/budget',
   getParentRoute: () => rootRouteImport,
-} as any)
+} as any).lazy(() => import('./routes/budget.lazy').then((d) => d.Route))
 const AnalyticsRoute = AnalyticsRouteImport.update({
   id: '/analytics',
   path: '/analytics',
@@ -47,17 +49,21 @@ const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
-} as any)
+} as any).lazy(() => import('./routes/index.lazy').then((d) => d.Route))
 const AnalyticsIndexRoute = AnalyticsIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => AnalyticsRoute,
-} as any)
+} as any).lazy(() =>
+  import('./routes/analytics/index.lazy').then((d) => d.Route),
+)
 const AnalyticsSpendingRoute = AnalyticsSpendingRouteImport.update({
   id: '/spending',
   path: '/spending',
   getParentRoute: () => AnalyticsRoute,
-} as any)
+} as any).lazy(() =>
+  import('./routes/analytics/spending.lazy').then((d) => d.Route),
+)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute

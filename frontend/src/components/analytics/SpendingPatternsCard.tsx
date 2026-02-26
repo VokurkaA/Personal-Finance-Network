@@ -1,9 +1,8 @@
 import { Card, Skeleton } from '@heroui/react'
 import { ResponsiveHeatMap } from '@nivo/heatmap'
-import { useStore } from '@tanstack/react-store'
-import { analyticsStore } from '../../store/analyticsStore'
-import { useResolvedChartTheme } from '../../config/nivoTheme'
-import { Deferred } from '../ui/Deferred'
+import { useSpendingPatterns } from '../../queries/useAnalytics'
+import { useTheme } from '../../context/ThemeContext'
+import { getNivoTheme } from '../../config/nivoTheme'
 
 type PatternRow = { id: string; data: { x: string; y: number }[] }
 type BackendPattern = {
@@ -17,8 +16,7 @@ type BackendPattern = {
 export function SpendingPatternsCard() {
   const { theme: nivoTheme } = useResolvedChartTheme()
 
-  const patternsRaw = useStore(analyticsStore, (s) => s.spendingPatterns[3])
-  const isLoading = !patternsRaw
+  const { data: patternsRaw, isLoading } = useSpendingPatterns(3)
   const patterns: PatternRow[] = patternsRaw
     ? (patternsRaw as BackendPattern[]).map((p) => ({
         id: p.category,

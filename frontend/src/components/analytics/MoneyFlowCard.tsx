@@ -1,8 +1,6 @@
 import { Card, Skeleton } from '@heroui/react'
 import { BarChart2 } from 'lucide-react'
 import { ResponsiveSankey } from '@nivo/sankey'
-import { useStore } from '@tanstack/react-store'
-import { analyticsStore } from '../../store/analyticsStore'
 import { useSpendingFlow } from '../../queries/useAnalytics'
 import { useResolvedChartTheme } from '../../config/nivoTheme'
 import { Deferred } from '../ui/Deferred'
@@ -18,8 +16,7 @@ function buildSankeyData(flow: SpendingFlowResponse) {
 export function MoneyFlowCard({ month }: { month: string }) {
   const { theme: nivoTheme, colors } = useResolvedChartTheme()
 
-  const { isLoading: flowLoading } = useSpendingFlow(month)
-  const flow = useStore(analyticsStore, (s) => s.spendingFlow[month])
+  const { data: flow, isLoading: flowLoading } = useSpendingFlow(month)
 
   const sankeyData = flow ? buildSankeyData(flow) : null
 

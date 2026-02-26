@@ -1,7 +1,5 @@
 import { Card, Skeleton, Link } from '@heroui/react'
 import { ResponsiveBar } from '@nivo/bar'
-import { useStore } from '@tanstack/react-store'
-import { budgetsStore } from '../../store/budgetsStore'
 import { useBudgetVsActual } from '../../queries/useBudget'
 import { useResolvedChartTheme } from '../../config/nivoTheme'
 import { Deferred } from '../ui/Deferred'
@@ -14,8 +12,7 @@ interface BudgetVsActualCardProps {
 function BudgetBarChart({ budgetId }: { budgetId: string }) {
   const { theme: nivoTheme, colors, danger } = useResolvedChartTheme()
 
-  const { isLoading } = useBudgetVsActual(budgetId)
-  const items = useStore(budgetsStore, (s) => s.budgetVsActual[budgetId] ?? [])
+  const { data: items = [], isLoading } = useBudgetVsActual(budgetId)
 
   const barData = items.map((i) => ({
     category: i.category.length > 12 ? i.category.slice(0, 12) + '…' : i.category,

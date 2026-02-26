@@ -1,8 +1,6 @@
 import { Chip, Skeleton } from '@heroui/react'
 import { Wallet } from 'lucide-react'
 import { useBudgetVsActual } from '../../queries/useBudget'
-import { useStore } from '@tanstack/react-store'
-import { budgetsStore } from '../../store/budgetsStore'
 import { Progress } from '../ui/Progress'
 
 function fmt(n: number) {
@@ -14,8 +12,7 @@ function fmt(n: number) {
 }
 
 export function BudgetVsActualPanel({ budgetId }: { budgetId: string }) {
-  const { isLoading } = useBudgetVsActual(budgetId)
-  const items = useStore(budgetsStore, (s) => s.budgetVsActual[budgetId] ?? [])
+  const { data: items = [], isLoading } = useBudgetVsActual(budgetId)
 
   const totalPlanned = items.reduce((s, i) => s + i.planned, 0)
   const totalActual = items.reduce((s, i) => s + i.actual, 0)

@@ -1,7 +1,6 @@
 import { Card, Chip } from '@heroui/react'
 import { TrendingUp, TrendingDown, Minus } from 'lucide-react'
-import { useStore } from '@tanstack/react-store'
-import { analyticsStore } from '../../store/analyticsStore'
+import { useSpendingByCategory } from '../../queries/useAnalytics'
 
 function TrendIcon({ direction }: { direction: 'up' | 'down' | 'stable' }) {
   if (direction === 'up') return <TrendingUp className="w-4 h-4 text-danger" />
@@ -10,7 +9,7 @@ function TrendIcon({ direction }: { direction: 'up' | 'down' | 'stable' }) {
 }
 
 export function CategoryTrendsCard({ months }: { months: number }) {
-  const spendingItems = useStore(analyticsStore, (s) => s.spendingByCategory[months] ?? [])
+  const { data: spendingItems = [] } = useSpendingByCategory(months)
 
   if (spendingItems.length === 0) return null
 

@@ -1,7 +1,9 @@
 import 'dotenv/config';
+import 'express-async-errors';
 import express from 'express';
 import cors from 'cors';
 import { closeDriver } from './db';
+import { errorHandler } from './middleware/error';
 import accountsRouter from './routes/accounts';
 import cardsRouter from './routes/cards';
 import transactionsRouter from './routes/transactions';
@@ -27,6 +29,8 @@ app.use('/api/recommendations', recommendationsRouter);
 app.get('/api/health', (_req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
+
+app.use(errorHandler);
 
 const server = app.listen(PORT, () => {
   console.log(`Personal Finance Network API listening on http://localhost:${PORT}`);

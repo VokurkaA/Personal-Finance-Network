@@ -3,9 +3,8 @@ import { ResponsiveLine } from '@nivo/line'
 import type { PartialTheme } from '@nivo/theming'
 import { Target, Calendar, TrendingUp } from 'lucide-react'
 import { useGoalForecast, useGoalContributions } from '../../queries/useGoals'
-import { useStore } from '@tanstack/react-store'
-import { goalsStore } from '../../store/goalsStore'
-import { useResolvedChartTheme } from '../../config/nivoTheme'
+import { useTheme } from '../../context/ThemeContext'
+import { getNivoTheme, CHART_COLORS } from '../../config/nivoTheme'
 import { Progress } from '../ui/Progress'
 import { Deferred } from '../ui/Deferred'
 import { fmt } from './goalUtils'
@@ -65,10 +64,8 @@ Chart.displayName = 'GoalChart'
 export function GoalDetailModal({ goal, isOpen, onClose }: GoalDetailModalProps) {
   const { theme: nivoTheme, colors, danger } = useResolvedChartTheme()
 
-  const { isLoading: forecastLoading } = useGoalForecast(goal.id)
-  const forecast = useStore(goalsStore, (s) => s.forecasts[goal.id])
-  const { isLoading: contribLoading } = useGoalContributions(goal.id)
-  const contributions = useStore(goalsStore, (s) => s.contributions[goal.id] ?? [])
+  const { data: forecast, isLoading: forecastLoading } = useGoalForecast(goal.id)
+  const { data: contributions = [], isLoading: contribLoading } = useGoalContributions(goal.id)
 
   const lineData = useMemo(() => {
     const today = new Date()

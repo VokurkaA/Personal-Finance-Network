@@ -10,7 +10,6 @@ import {
 import { ArrowUp, ArrowDown, ArrowLeftRight } from 'lucide-react'
 import { useTransactions } from '../../queries/useTransactions'
 import { transactionFiltersStore } from '../../store/transactionFiltersStore'
-import { transactionsStore } from '../../store/transactionsStore'
 import type { Transaction } from '../../types/entities'
 
 function fmt(n: number) {
@@ -100,8 +99,7 @@ const columns: ColumnDef<Transaction>[] = [
 export function TransactionTable() {
   'use no memo'
   const filters = useStore(transactionFiltersStore, (s) => s)
-  const { isLoading } = useTransactions(filters)
-  const transactions = useStore(transactionsStore, (s) => s.data)
+  const { data: transactions = [], isLoading } = useTransactions(filters)
 
   // eslint-disable-next-line react-hooks/incompatible-library
   const table = useReactTable({

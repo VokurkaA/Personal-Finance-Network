@@ -1,11 +1,9 @@
 import { Card, Chip, Skeleton } from '@heroui/react'
 import { AlertTriangle } from 'lucide-react'
-import { useStore } from '@tanstack/react-store'
-import { analyticsStore } from '../../store/analyticsStore'
+import { useAnomalies } from '../../queries/useAnalytics'
 
 export function AnomalyListCard() {
-  const anomalyData = useStore(analyticsStore, (s) => s.anomalies[0.9])
-  const isLoading = !anomalyData
+  const { data: anomalyData, isLoading } = useAnomalies(0.9)
   const anomalies = anomalyData?.anomalies ?? []
 
   return (
