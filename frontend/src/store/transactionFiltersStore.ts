@@ -6,6 +6,7 @@ export const transactionFiltersStore = new Store<TransactionFilters>({
   endDate: undefined,
   category: undefined,
   accountId: undefined,
+  search: undefined,
 })
 
 export function setTransactionFilter<K extends keyof TransactionFilters>(
@@ -21,5 +22,6 @@ export function resetTransactionFilters(): void {
     endDate: undefined,
     category: undefined,
     accountId: undefined,
+    search: undefined,
   }))
 }

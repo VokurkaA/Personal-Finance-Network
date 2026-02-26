@@ -1,20 +1,8 @@
 import { useState } from 'react'
-import {
-  Button,
-  Input,
-  Label,
-  ListBox,
-  ModalRoot,
-  ModalBackdrop,
-  ModalContainer,
-  ModalDialog,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
-  Select,
-} from '@heroui/react'
+import { Button, Input, Label, ListBox, Modal, Select, TextField } from '@heroui/react'
 import { useCreateGoal } from '../../queries/useGoals'
 import type { Goal } from '../../types/entities'
+import { AppDatePicker } from '../ui/AppDatePicker'
 
 interface AddGoalModalProps {
   isOpen: boolean
@@ -52,111 +40,121 @@ export function AddGoalModal({ isOpen, onClose }: AddGoalModalProps) {
     setForm((p) => ({ ...p, [k]: v }))
 
   return (
-    <ModalRoot isOpen={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <ModalBackdrop isDismissable>
-        <ModalContainer size="lg">
-          <ModalDialog>
-            <form onSubmit={handleSubmit}>
-              <ModalHeader>New Goal</ModalHeader>
-              <ModalBody className="flex flex-col gap-3">
-                <div className="flex flex-col gap-1">
-                  <Label className="text-xs font-medium">Goal Name</Label>
+    <Modal.Backdrop isOpen={isOpen} onOpenChange={(open) => !open && onClose()} variant="blur">
+      <Modal.Container size="lg">
+        <Modal.Dialog>
+          <Modal.Header>
+            <Modal.Heading>New Goal</Modal.Heading>
+          </Modal.Header>
+          <form onSubmit={handleSubmit}>
+            <Modal.Body className="flex flex-col gap-4">
+              <TextField isRequired name="goal-name" variant="secondary">
+                <Label>Goal Name</Label>
+                <Input
+                  placeholder="e.g. Emergency Fund"
+                  value={form.name}
+                  onChange={(e) => setField('name', e.target.value)}
+                  variant="secondary"
+                />
+              </TextField>
+
+              <div className="grid grid-cols-2 gap-3">
+                <Select
+                  aria-label="Goal type"
+                  value={form.type}
+                  onChange={(key) => setField('type', key as Goal['type'])}
+                  variant="secondary"
+                >
+                  <Label>Type</Label>
+                  <Select.Trigger>
+                    <Select.Value />
+                    <Select.Indicator />
+                  </Select.Trigger>
+                  <Select.Popover>
+                    <ListBox>
+                      <ListBox.Item id="savings" textValue="Savings">
+                        Savings
+                      </ListBox.Item>
+                      <ListBox.Item id="investment" textValue="Investment">
+                        Investment
+                      </ListBox.Item>
+                      <ListBox.Item id="debt_payoff" textValue="Debt Payoff">
+                        Debt Payoff
+                      </ListBox.Item>
+                    </ListBox>
+                  </Select.Popover>
+                </Select>
+
+                <Select
+                  aria-label="Risk profile"
+                  value={form.riskProfile}
+                  onChange={(key) => setField('riskProfile', key as Goal['riskProfile'])}
+                  variant="secondary"
+                >
+                  <Label>Risk Profile</Label>
+                  <Select.Trigger>
+                    <Select.Value />
+                    <Select.Indicator />
+                  </Select.Trigger>
+                  <Select.Popover>
+                    <ListBox>
+                      <ListBox.Item id="low" textValue="Low">
+                        Low
+                      </ListBox.Item>
+                      <ListBox.Item id="medium" textValue="Medium">
+                        Medium
+                      </ListBox.Item>
+                      <ListBox.Item id="high" textValue="High">
+                        High
+                      </ListBox.Item>
+                    </ListBox>
+                  </Select.Popover>
+                </Select>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <TextField isRequired name="target-amount" type="number" variant="secondary">
+                  <Label>Target Amount ($)</Label>
                   <Input
-                    placeholder="e.g. Emergency Fund"
-                    required
-                    value={form.name}
-                    onChange={(e) => setField('name', e.target.value)}
+                    placeholder="10000"
+                    value={form.targetAmount}
+                    onChange={(e) => setField('targetAmount', e.target.value)}
+                    min={1}
+                    variant="secondary"
                   />
-                </div>
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="flex flex-col gap-1">
-                    <Label className="text-xs font-medium">Type</Label>
-                    <Select
-                      aria-label="Goal type"
-                      selectedKey={form.type}
-                      onSelectionChange={(key) => setField('type', key as Goal['type'])}
-                    >
-                      <Select.Trigger>
-                        <Select.Value />
-                        <Select.Indicator />
-                      </Select.Trigger>
-                      <Select.Popover>
-                        <ListBox>
-                          <ListBox.Item id="savings">Savings</ListBox.Item>
-                          <ListBox.Item id="investment">Investment</ListBox.Item>
-                          <ListBox.Item id="debt_payoff">Debt Payoff</ListBox.Item>
-                        </ListBox>
-                      </Select.Popover>
-                    </Select>
-                  </div>
-                  <div className="flex flex-col gap-1">
-                    <Label className="text-xs font-medium">Risk Profile</Label>
-                    <Select
-                      aria-label="Risk profile"
-                      selectedKey={form.riskProfile}
-                      onSelectionChange={(key) =>
-                        setField('riskProfile', key as Goal['riskProfile'])
-                      }
-                    >
-                      <Select.Trigger>
-                        <Select.Value />
-                        <Select.Indicator />
-                      </Select.Trigger>
-                      <Select.Popover>
-                        <ListBox>
-                          <ListBox.Item id="low">Low</ListBox.Item>
-                          <ListBox.Item id="medium">Medium</ListBox.Item>
-                          <ListBox.Item id="high">High</ListBox.Item>
-                        </ListBox>
-                      </Select.Popover>
-                    </Select>
-                  </div>
-                </div>
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="flex flex-col gap-1">
-                    <Label className="text-xs font-medium">Target Amount ($)</Label>
-                    <Input
-                      type="number"
-                      placeholder="10000"
-                      required
-                      value={form.targetAmount}
-                      onChange={(e) => setField('targetAmount', e.target.value)}
-                      min={1}
-                    />
-                  </div>
-                  <div className="flex flex-col gap-1">
-                    <Label className="text-xs font-medium">Current Amount ($)</Label>
-                    <Input
-                      type="number"
-                      placeholder="0"
-                      value={form.currentAmount}
-                      onChange={(e) => setField('currentAmount', e.target.value)}
-                      min={0}
-                    />
-                  </div>
-                </div>
-                <div className="flex flex-col gap-1">
-                  <Label className="text-xs font-medium">Deadline</Label>
+                </TextField>
+
+                <TextField name="current-amount" type="number" variant="secondary">
+                  <Label>Current Amount ($)</Label>
                   <Input
-                    type="date"
-                    required
-                    value={form.deadline}
-                    onChange={(e) => setField('deadline', e.target.value)}
+                    placeholder="0"
+                    value={form.currentAmount}
+                    onChange={(e) => setField('currentAmount', e.target.value)}
+                    min={0}
+                    variant="secondary"
                   />
-                </div>
-              </ModalBody>
-              <ModalFooter>
-                <Button variant="ghost" size="sm" type="button" onPress={onClose}>
-                  Cancel
-                </Button>
-                <Button variant="primary" size="sm" type="submit" isDisabled={isPending}>
-                  {isPending ? 'Saving…' : 'Create Goal'}
-                </Button>
-              </ModalFooter>
-            </form>
-          </ModalDialog>
-        </ModalContainer>
-      </ModalBackdrop>
-    </ModalRoot>
+                </TextField>
+              </div>
+
+              <AppDatePicker
+                label="Deadline"
+                value={form.deadline || undefined}
+                onChange={(val) => setField('deadline', val ?? '')}
+                required
+                variant="secondary"
+              />
+            </Modal.Body>
+            <Modal.Footer className="mt-4">
+              <Button variant="ghost" size="sm" type="button" onPress={onClose}>
+                Cancel
+              </Button>
+              <Button variant="primary" size="sm" type="submit" isPending={isPending}>
+                Create Goal
+              </Button>
+            </Modal.Footer>
+          </form>
+        </Modal.Dialog>
+      </Modal.Container>
+    </Modal.Backdrop>
   )
 }

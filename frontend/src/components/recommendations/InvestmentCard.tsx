@@ -1,4 +1,4 @@
-import { Card, Chip, Button } from '@heroui/react'
+import { Card, Chip, Button, toast } from '@heroui/react'
 import { ArrowRight } from 'lucide-react'
 import type { InvestmentRecommendation } from '../../types/api'
 import { RISK_COLOR } from './recommendationUtils'
@@ -19,7 +19,11 @@ export function InvestmentCard({ rec }: { rec: InvestmentRecommendation }) {
             <p className="text-xs text-foreground-400">Expected return</p>
             <p className="font-bold text-success">+{(rec.expectedReturn * 100).toFixed(1)}%</p>
           </div>
-          <Button size="sm" variant="ghost">
+          <Button
+            size="sm"
+            variant="ghost"
+            onPress={() => toast.info(`Opening details for ${rec.asset}`)}
+          >
             Explore <ArrowRight className="w-3 h-3 ml-1" />
           </Button>
         </div>

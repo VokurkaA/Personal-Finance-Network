@@ -35,11 +35,13 @@ export function CategoryTrendsCard({ months }: { months: number }) {
                   item.trend === 'up' ? 'danger' : item.trend === 'down' ? 'success' : 'default'
                 }
               >
-                {item.trend === 'up'
-                  ? `+${(((item.thisMonth - item.lastMonth) / (item.lastMonth || 1)) * 100).toFixed(0)}%`
-                  : item.trend === 'down'
-                    ? `-${(((item.lastMonth - item.thisMonth) / (item.lastMonth || 1)) * 100).toFixed(0)}%`
-                    : '—'}
+                <Chip.Label>
+                  {item.trend === 'up'
+                    ? `+${(((item.thisMonth - item.lastMonth) / (item.lastMonth || 1)) * 100).toFixed(0)}%`
+                    : item.trend === 'down'
+                      ? `-${(((item.lastMonth - item.thisMonth) / (item.lastMonth || 1)) * 100).toFixed(0)}%`
+                      : '—'}
+                </Chip.Label>
               </Chip>
             </div>
           ))}
