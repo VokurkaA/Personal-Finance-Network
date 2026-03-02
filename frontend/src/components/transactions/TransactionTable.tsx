@@ -7,7 +7,9 @@ import {
   type ColumnDef,
   flexRender,
 } from '@tanstack/react-table'
+import { useVirtualizer } from '@tanstack/react-virtual'
 import { ArrowUp, ArrowDown, ArrowLeftRight } from 'lucide-react'
+import { useRef, useMemo } from 'react'
 import { useTransactions } from '../../queries/useTransactions'
 import { transactionFiltersStore } from '../../store/transactionFiltersStore'
 import type { Transaction } from '../../types/entities'
@@ -16,90 +18,95 @@ function fmt(n: number) {
   return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(Math.abs(n))
 }
 
-const columns: ColumnDef<Transaction>[] = [
-  {
-    accessorKey: 'date',
-    header: 'Date',
-    cell: (info) => (
-      <span className="text-xs text-foreground-400">
-        {new Date(info.getValue<string>()).toLocaleDateString()}
-      </span>
-    ),
-  },
-  {
-    accessorKey: 'description',
-    header: 'Description',
-    cell: (info) => (
-      <span className="text-sm font-medium truncate max-w-50 block">{info.getValue<string>()}</span>
-    ),
-  },
-  {
-    accessorKey: 'amount',
-    header: 'Amount',
-    cell: (info) => {
-      const row = info.row.original
-      return (
-        <span
-          className={`font-semibold text-sm ${
-            row.type === 'income'
-              ? 'text-success'
-              : row.type === 'expense'
-                ? 'text-danger'
-                : 'text-primary'
-          }`}
-        >
-          {row.type === 'expense' ? '-' : '+'}
-          {fmt(info.getValue<number>())}
-        </span>
-      )
-    },
-  },
-  {
-    accessorKey: 'type',
-    header: 'Type',
-    cell: (info) => {
-      const t = info.getValue<'income' | 'expense' | 'transfer'>()
-      const color = t === 'income' ? 'success' : t === 'expense' ? 'danger' : 'accent'
-      return (
-        <Chip size="sm" color={color as never} variant="soft">
-          {t}
-        </Chip>
-      )
-    },
-  },
-  {
-    accessorKey: 'status',
-    header: 'Status',
-    cell: (info) => {
-      const s = info.getValue<'completed' | 'pending' | 'failed'>()
-      const color = s === 'completed' ? 'success' : s === 'pending' ? 'warning' : 'danger'
-      return (
-        <Chip size="sm" color={color as never} variant="secondary">
-          {s}
-        </Chip>
-      )
-    },
-  },
-  {
-    accessorKey: 'category',
-    header: 'Category',
-    cell: (info) => {
-      const cat = info.getValue<string | undefined>()
-      return cat ? (
-        <Chip size="sm" variant="soft" color="default">
-          {cat}
-        </Chip>
-      ) : (
-        <span className="text-xs text-foreground-300">—</span>
-      )
-    },
-  },
-]
-
 export function TransactionTable() {
   'use no memo'
   const filters = useStore(transactionFiltersStore, (s) => s)
   const { data: transactions = [], isLoading } = useTransactions(filters)
+
+  const columns = useMemo<ColumnDef<Transaction>[]>(
+    () => [
+      {
+        accessorKey: 'date',
+        header: 'Date',
+        cell: (info) => (
+          <span className="text-xs text-foreground-400">
+            {new Date(info.getValue<string>()).toLocaleDateString()}
+          </span>
+        ),
+      },
+      {
+        accessorKey: 'description',
+        header: 'Description',
+        cell: (info) => (
+          <span className="text-sm font-medium truncate max-w-50 block">
+            {info.getValue<string>()}
+          </span>
+        ),
+      },
+      {
+        accessorKey: 'amount',
+        header: 'Amount',
+        cell: (info) => {
+          const row = info.row.original
+          return (
+            <span
+              className={`font-semibold text-sm ${
+                row.type === 'income'
+                  ? 'text-success'
+                  : row.type === 'expense'
+                    ? 'text-danger'
+                    : 'text-primary'
+              }`}
+            >
+              {row.type === 'expense' ? '-' : '+'}
+              {fmt(info.getValue<number>())}
+            </span>
+          )
+        },
+      },
+      {
+        accessorKey: 'type',
+        header: 'Type',
+        cell: (info) => {
+          const t = info.getValue<'income' | 'expense' | 'transfer'>()
+          const color = t === 'income' ? 'success' : t === 'expense' ? 'danger' : 'accent'
+          return (
+            <Chip size="sm" color={color as never} variant="soft">
+              {t}
+            </Chip>
+          )
+        },
+      },
+      {
+        accessorKey: 'status',
+        header: 'Status',
+        cell: (info) => {
+          const s = info.getValue<'completed' | 'pending' | 'failed'>()
+          const color = s === 'completed' ? 'success' : s === 'pending' ? 'warning' : 'danger'
+          return (
+            <Chip size="sm" color={color as never} variant="secondary">
+              {s}
+            </Chip>
+          )
+        },
+      },
+      {
+        accessorKey: 'category',
+        header: 'Category',
+        cell: (info) => {
+          const cat = info.getValue<string | undefined>()
+          return cat ? (
+            <Chip size="sm" variant="soft" color="default">
+              {cat}
+            </Chip>
+          ) : (
+            <span className="text-xs text-foreground-300">—</span>
+          )
+        },
+      },
+    ],
+    [],
+  )
 
   // eslint-disable-next-line react-hooks/incompatible-library
   const table = useReactTable({
@@ -108,6 +115,24 @@ export function TransactionTable() {
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
   })
+
+  const { rows } = table.getRowModel()
+
+  const parentRef = useRef<HTMLDivElement>(null)
+
+  const rowVirtualizer = useVirtualizer({
+    count: rows.length,
+    getScrollElement: () => parentRef.current,
+    estimateSize: () => 57, // Estimated height of a row
+    overscan: 10,
+  })
+
+  const virtualRows = rowVirtualizer.getVirtualItems()
+  const totalSize = rowVirtualizer.getTotalSize()
+
+  const paddingTop = virtualRows.length > 0 ? virtualRows?.[0]?.start || 0 : 0
+  const paddingBottom =
+    virtualRows.length > 0 ? totalSize - (virtualRows?.[virtualRows.length - 1]?.end || 0) : 0
 
   return (
     <Card>
@@ -125,16 +150,19 @@ export function TransactionTable() {
             ))}
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
+          <div
+            ref={parentRef}
+            className="overflow-auto max-h-[calc(100vh-320px)] min-h-100 border-t border-divider"
+          >
+            <table className="w-full text-sm border-separate border-spacing-0">
+              <thead className="sticky top-0 z-10 bg-background">
                 <tr className="border-b border-divider bg-surface-secondary/50">
                   {table.getHeaderGroups().flatMap((hg) =>
                     hg.headers.map((header) => (
                       <th
                         key={header.id}
                         onClick={header.column.getToggleSortingHandler()}
-                        className="px-4 py-3.5 text-left font-semibold text-muted cursor-pointer select-none hover:text-foreground transition-colors uppercase tracking-wider text-[10px]"
+                        className="px-4 py-3.5 text-left font-semibold text-muted cursor-pointer select-none hover:text-foreground transition-colors uppercase tracking-wider text-[10px] border-b border-divider"
                       >
                         <span className="flex items-center gap-1">
                           {flexRender(header.column.columnDef.header, header.getContext())}
@@ -151,7 +179,7 @@ export function TransactionTable() {
                 </tr>
               </thead>
               <tbody>
-                {table.getRowModel().rows.length === 0 ? (
+                {rows.length === 0 ? (
                   <tr>
                     <td colSpan={6} className="text-center py-12 text-muted">
                       <div className="flex flex-col items-center gap-3">
@@ -161,18 +189,35 @@ export function TransactionTable() {
                     </td>
                   </tr>
                 ) : (
-                  table.getRowModel().rows.map((row) => (
-                    <tr
-                      key={row.id}
-                      className="border-b border-separator last:border-0 hover:bg-surface-secondary/40 transition-colors"
-                    >
-                      {row.getVisibleCells().map((cell) => (
-                        <td key={cell.id} className="px-4 py-4">
-                          {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                        </td>
-                      ))}
-                    </tr>
-                  ))
+                  <>
+                    {paddingTop > 0 && (
+                      <tr>
+                        <td style={{ height: `${paddingTop}px` }} />
+                      </tr>
+                    )}
+                    {virtualRows.map((virtualRow) => {
+                      const row = rows[virtualRow.index]
+                      return (
+                        <tr
+                          key={row.id}
+                          data-index={virtualRow.index}
+                          ref={rowVirtualizer.measureElement}
+                          className="border-b border-separator last:border-0 hover:bg-surface-secondary/40 transition-colors"
+                        >
+                          {row.getVisibleCells().map((cell) => (
+                            <td key={cell.id} className="px-4 py-4 border-b border-divider">
+                              {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                            </td>
+                          ))}
+                        </tr>
+                      )
+                    })}
+                    {paddingBottom > 0 && (
+                      <tr>
+                        <td style={{ height: `${paddingBottom}px` }} />
+                      </tr>
+                    )}
+                  </>
                 )}
               </tbody>
             </table>

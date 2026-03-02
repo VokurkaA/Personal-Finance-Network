@@ -30,6 +30,7 @@
     "@tanstack/react-router-devtools": "^1.163.2",
     "@tanstack/react-store": "^0.9.1",
     "@tanstack/react-table": "^8.21.3",
+    "@tanstack/react-virtual": "^3.13.19",
     "@tanstack/router-plugin": "^1.163.2",
     "@tanstack/store": "^0.9.1",
     "lucide-react": "^0.575.0",

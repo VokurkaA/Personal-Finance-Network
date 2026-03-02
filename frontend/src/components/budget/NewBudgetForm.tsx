@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Button, Input, Label } from '@heroui/react'
 import { Save, Loader2 } from 'lucide-react'
 import { useCreateBudget } from '../../queries/useBudget'
@@ -14,9 +14,12 @@ export function NewBudgetForm({ month, onSuccess }: NewBudgetFormProps) {
   const { data: categories, isLoading: categoriesLoading } = useCategories()
   const [amounts, setAmounts] = useState<Record<string, string>>({})
 
+  // Use a ref to ensure we only initialize default amounts once
+  const initializedRef = useRef(false)
+
   // Initialize amounts when categories are loaded
   useEffect(() => {
-    if (categories) {
+    if (categories && !initializedRef.current) {
       // We only want expense categories for the budget usually
       const expenseCategories = categories.filter((c) => c.type === 'expense')
       setAmounts((prev) => {
@@ -28,6 +31,7 @@ export function NewBudgetForm({ month, onSuccess }: NewBudgetFormProps) {
         })
         return next
       })
+      initializedRef.current = true
     }
   }, [categories])
 
