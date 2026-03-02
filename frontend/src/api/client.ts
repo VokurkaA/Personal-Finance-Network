@@ -11,12 +11,18 @@ export class ApiError extends Error {
 }
 
 export async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
+  const headers: Record<string, string> = {
+    ...(init?.headers as Record<string, string>),
+  }
+
+  // Only set application/json if not FormData and not already set
+  if (!(init?.body instanceof FormData) && !headers['Content-Type']) {
+    headers['Content-Type'] = 'application/json'
+  }
+
   const response = await fetch(`${BASE_URL}${path}`, {
-    headers: {
-      'Content-Type': 'application/json',
-      ...init?.headers,
-    },
     ...init,
+    headers,
   })
 
   if (!response.ok) {
@@ -24,5 +30,6 @@ export async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> 
     throw new ApiError(response.status, text)
   }
 
-  return response.json() as Promise<T>
+  const text = await response.text()
+  return (text ? JSON.parse(text) : {}) as T
 }

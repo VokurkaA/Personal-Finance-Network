@@ -11,6 +11,7 @@ import goalsRouter from './routes/goals';
 import budgetsRouter from './routes/budgets';
 import analyticsRouter from './routes/analytics';
 import recommendationsRouter from './routes/recommendations';
+import categoriesRouter from './routes/categories';
 
 const app = express();
 const PORT = process.env.PORT ?? 3000;
@@ -25,6 +26,7 @@ app.use('/api/goals', goalsRouter);
 app.use('/api/budgets', budgetsRouter);
 app.use('/api/analytics', analyticsRouter);
 app.use('/api/recommendations', recommendationsRouter);
+app.use('/api/categories', categoriesRouter);
 
 app.get('/api/health', (_req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });

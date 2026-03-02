@@ -34,6 +34,7 @@ function BudgetPage() {
           <Card.Header className="flex items-center justify-between">
             <Card.Title>Budget Plan</Card.Title>
             <Select
+              variant="secondary"
               aria-label="Select month"
               selectedKey={selectedMonth}
               onSelectionChange={(key) => setSelectedMonth(key as string)}

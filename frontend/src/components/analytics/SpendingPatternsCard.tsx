@@ -1,8 +1,8 @@
 import { Card, Skeleton } from '@heroui/react'
 import { ResponsiveHeatMap } from '@nivo/heatmap'
 import { useSpendingPatterns } from '../../queries/useAnalytics'
-import { useTheme } from '../../context/ThemeContext'
-import { getNivoTheme } from '../../config/nivoTheme'
+import { useResolvedChartTheme } from '../../config/nivoTheme'
+import { Deferred } from '../ui/Deferred'
 
 type PatternRow = { id: string; data: { x: string; y: number }[] }
 type BackendPattern = {

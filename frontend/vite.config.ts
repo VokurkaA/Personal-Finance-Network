@@ -4,25 +4,27 @@ import tailwindcss from '@tailwindcss/vite'
 import { TanStackRouterVite } from '@tanstack/router-plugin/vite'
 
 // https://vite.dev/config/
-export default defineConfig({
-  server: {
-    proxy: {
-      '/api': {
-        target: 'http://localhost:3000',
-        changeOrigin: true,
+export default defineConfig(({ mode }) => {
+  return {
+    server: {
+      proxy: {
+        '/api': {
+          target: process.env.VITE_API_URL || 'http://localhost:3000',
+          changeOrigin: true,
+        },
       },
     },
-  },
-  plugins: [
-    TanStackRouterVite({
-      routesDirectory: './src/routes',
-      generatedRouteTree: './src/routeTree.gen.ts',
-    }),
-    tailwindcss(),
-    react({
-      babel: {
-        plugins: [['babel-plugin-react-compiler']],
-      },
-    }),
-  ],
+    plugins: [
+      TanStackRouterVite({
+        routesDirectory: './src/routes',
+        generatedRouteTree: './src/routeTree.gen.ts',
+      }),
+      tailwindcss(),
+      react({
+        babel: {
+          plugins: [['babel-plugin-react-compiler']],
+        },
+      }),
+    ],
+  }
 })

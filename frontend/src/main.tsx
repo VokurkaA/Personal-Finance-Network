@@ -9,7 +9,7 @@ import { routeTree } from './routeTree.gen'
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: Infinity,
+      staleTime: 5 * 60 * 1000,
       gcTime: 5 * 60 * 1000,
     },
   },

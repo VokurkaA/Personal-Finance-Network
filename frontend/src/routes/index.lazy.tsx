@@ -13,8 +13,7 @@ import {
 import { useBudgetVsActual, useBudgets } from '../queries/useBudget'
 import { useCashflow } from '../queries/useAnalytics'
 import { useGoals } from '../queries/useGoals'
-import { useTheme } from '../context/ThemeContext'
-import { getNivoTheme, CHART_COLORS } from '../config/nivoTheme'
+import { useResolvedChartTheme } from '../config/nivoTheme'
 import { Progress } from '../components/ui/Progress'
 
 export const Route = createLazyFileRoute('/')({
@@ -143,9 +142,7 @@ function BudgetSummary({ budgetId, month }: { budgetId: string; month: string })
 }
 
 function DashboardPage() {
-  const { theme } = useTheme()
-  const isDark = theme === 'dark'
-  const nivoTheme = getNivoTheme(isDark)
+  const { theme: nivoTheme, colors } = useResolvedChartTheme()
   const month = currentMonth()
 
   const { data: cashflow, isLoading: cfLoading } = useCashflow(month)
@@ -212,7 +209,7 @@ function DashboardPage() {
                   keys={['Income', 'Expenses']}
                   indexBy="month"
                   theme={nivoTheme}
-                  colors={[CHART_COLORS[2], CHART_COLORS[4]]}
+                  colors={[colors[1], colors[2]]}
                   groupMode="grouped"
                   padding={0.5}
                   borderRadius={4}

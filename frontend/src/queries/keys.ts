@@ -1,5 +1,9 @@
 import type { TransactionFilters } from '../types/api'
 
+export const categoryKeys = {
+  all: ['categories'] as const,
+}
+
 export const accountKeys = {
   all: ['accounts'] as const,
   detail: (id: string) => ['accounts', id] as const,

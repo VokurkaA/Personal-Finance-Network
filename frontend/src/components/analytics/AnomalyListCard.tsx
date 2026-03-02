@@ -2,8 +2,12 @@ import { Card, Chip, Skeleton } from '@heroui/react'
 import { AlertTriangle } from 'lucide-react'
 import { useAnomalies } from '../../queries/useAnalytics'
 
-export function AnomalyListCard() {
-  const { data: anomalyData, isLoading } = useAnomalies(0.9)
+interface AnomalyListCardProps {
+  sensitivity?: number
+}
+
+export function AnomalyListCard({ sensitivity = 0.9 }: AnomalyListCardProps) {
+  const { data: anomalyData, isLoading } = useAnomalies(sensitivity)
   const anomalies = anomalyData?.anomalies ?? []
 
   return (

@@ -7,14 +7,12 @@ import { Toast } from '@heroui/react'
 import { Sidebar } from '../components/Sidebar'
 import { Topbar } from '../components/Topbar'
 import { uiStore, openSidebar, closeSidebar } from '../store/uiStore'
-import { accountsQueryOptions } from '../queries/useAccounts'
 
 interface RouterContext {
   queryClient: QueryClient
 }
 
 export const Route = createRootRouteWithContext<RouterContext>()({
-  loader: ({ context: { queryClient } }) => queryClient.ensureQueryData(accountsQueryOptions),
   component: RootComponent,
 })
 
