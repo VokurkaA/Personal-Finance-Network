@@ -1,6 +1,7 @@
 import { Button, Card, Input, Label, ListBox, Select, TextField } from '@heroui/react'
 import { Search, X } from 'lucide-react'
 import { useStore } from '@tanstack/react-store'
+import { useEffect, useState } from 'react'
 import {
   transactionFiltersStore,
   setTransactionFilter,
@@ -10,7 +11,26 @@ import { AppDatePicker } from '../ui/AppDatePicker'
 
 export function TransactionFilters() {
   const filters = useStore(transactionFiltersStore, (s) => s)
-  const hasFilters = Boolean(filters.startDate || filters.endDate || filters.category)
+  const [searchValue, setSearchValue] = useState(filters.search ?? '')
+
+  // Keep local search value in sync with store when store is reset (e.g. via reset button)
+  const storeSearch = filters.search ?? ''
+  if (storeSearch !== searchValue && storeSearch === '') {
+    setSearchValue('')
+  }
+
+  const hasFilters = Boolean(
+    filters.startDate || filters.endDate || filters.category || filters.search,
+  )
+
+  // Sync debounced search to store
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setTransactionFilter('search', searchValue || undefined)
+    }, 400)
+
+    return () => clearTimeout(timer)
+  }, [searchValue])
 
   return (
     <Card>
@@ -22,8 +42,8 @@ export function TransactionFilters() {
           <TextField
             className="flex-1 min-w-60 max-w-md"
             aria-label="Search description"
-            value={filters.search ?? ''}
-            onChange={(val) => setTransactionFilter('search', val)}
+            value={searchValue}
+            onChange={setSearchValue}
             variant="secondary"
           >
             <div className="relative">

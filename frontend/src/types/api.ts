@@ -9,6 +9,8 @@ export interface TransactionFilters {
   category?: string
   accountId?: string
   search?: string
+  limit?: number
+  offset?: number
 }
 
 export interface CashflowParams {

@@ -2,7 +2,6 @@ import 'dotenv/config';
 import 'express-async-errors';
 import express from 'express';
 import cors from 'cors';
-import { closeDriver } from './db';
 import { errorHandler } from './middleware/error';
 import accountsRouter from './routes/accounts';
 import cardsRouter from './routes/cards';
@@ -12,6 +11,7 @@ import budgetsRouter from './routes/budgets';
 import analyticsRouter from './routes/analytics';
 import recommendationsRouter from './routes/recommendations';
 import categoriesRouter from './routes/categories';
+import { initDb, closeDriver } from './db';
 
 const app = express();
 const PORT = process.env.PORT ?? 3000;
@@ -34,10 +34,10 @@ app.get('/api/health', (_req, res) => {
 
 app.use(errorHandler);
 
-const server = app.listen(PORT, () => {
+const server = app.listen(PORT, async () => {
   console.log(`Personal Finance Network API listening on http://localhost:${PORT}`);
+  await initDb();
 });
-
 process.on('SIGTERM', async () => {
   server.close();
   await closeDriver();

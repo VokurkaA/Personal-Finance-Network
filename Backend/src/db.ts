@@ -1,4 +1,4 @@
-import neo4j, { Driver, Session, Integer } from 'neo4j-driver';
+import neo4j, { Driver, Session, Integer, isInt, driver as createDriver } from 'neo4j-driver';
 
 let driver: Driver | null = null;
 
@@ -21,7 +21,7 @@ function isNeoRel(v: unknown): v is NeoRel {
  */
 export function toPlain(value: unknown): unknown {
   if (value === null || value === undefined) return value;
-  if (neo4j.isInt(value as Integer)) {
+  if (isInt(value as Integer)) {
     return (value as Integer).toNumber();
   }
   if (isNeoNode(value)) return toPlain(value.properties);
@@ -44,7 +44,7 @@ export function getDriver(): Driver {
     const uri = process.env.NEO4J_URI ?? 'bolt://localhost:7687';
     const user = process.env.NEO4J_USER ?? 'neo4j';
     const password = process.env.NEO4J_PASSWORD ?? 'password';
-    driver = neo4j.driver(uri, neo4j.auth.basic(user, password));
+    driver = createDriver(uri, neo4j.auth.basic(user, password));
   }
   return driver;
 }
@@ -74,5 +74,25 @@ export async function closeDriver(): Promise<void> {
   if (driver) {
     await driver.close();
     driver = null;
+  }
+}
+
+export async function initDb(): Promise<void> {
+  console.log('Ensuring Neo4j indexes exist...');
+  const queries = [
+    'CREATE CONSTRAINT IF NOT EXISTS FOR (u:User) REQUIRE u.id IS UNIQUE',
+    'CREATE CONSTRAINT IF NOT EXISTS FOR (a:Account) REQUIRE a.id IS UNIQUE',
+    'CREATE CONSTRAINT IF NOT EXISTS FOR (t:Transaction) REQUIRE t.id IS UNIQUE',
+    'CREATE CONSTRAINT IF NOT EXISTS FOR (c:Category) REQUIRE c.id IS UNIQUE',
+    'CREATE INDEX IF NOT EXISTS FOR (t:Transaction) ON (t.date)',
+    'CREATE INDEX IF NOT EXISTS FOR (c:Category) ON (c.name)',
+  ];
+
+  for (const q of queries) {
+    try {
+      await runQuery(q);
+    } catch (e) {
+      console.warn(`Could not ensure index/constraint: ${q}`, (e as Error).message);
+    }
   }
 }

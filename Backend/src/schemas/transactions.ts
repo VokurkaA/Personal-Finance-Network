@@ -18,4 +18,7 @@ export const transactionQuerySchema = z.object({
   endDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
   category: z.string().optional(),
   accountId: z.string().optional(),
+  search: z.string().optional(),
+  limit: z.coerce.number().optional(),
+  offset: z.coerce.number().optional(),
 });

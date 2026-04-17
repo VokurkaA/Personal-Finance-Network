@@ -1,4 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
+import { int } from 'neo4j-driver';
 import { runQuery, runQuerySingle } from '../db';
 import type { Transaction } from '../types';
 
@@ -27,6 +28,9 @@ export interface TransactionFilters {
   endDate?: string;
   category?: string;
   accountId?: string;
+  search?: string;
+  limit?: number;
+  offset?: number;
 }
 
 export class TransactionService {
@@ -42,27 +46,47 @@ export class TransactionService {
       conditions.push('t.date <= $endDate');
       params.endDate = filters.endDate;
     }
-    if (filters.category) {
-      conditions.push('cat.name = $category');
-      params.category = filters.category;
+    if (filters.search) {
+      conditions.push('toLower(t.description) CONTAINS toLower($search)');
+      params.search = filters.search;
     }
 
-    let matchBase = TX_MATCH_BASE;
+    let matchBase = '';
+    
     if (filters.accountId) {
       matchBase = `
         MATCH (a:Account {id: $accountId})
         MATCH (t:Transaction)
         WHERE (t)-[:FROM]->(a) OR (t)-[:TO]->(a)
-        OPTIONAL MATCH (t)-[:FROM]->(fa:Account)
-        OPTIONAL MATCH (t)-[:TO]->(ta:Account)
-        OPTIONAL MATCH (t)-[:SPENT_AT]->(m:Merchant)
-        OPTIONAL MATCH (t)-[r_cat:CATEGORIZED_AS]->(cat:Category)
       `;
       params.accountId = filters.accountId;
+    } else if (filters.category) {
+      matchBase = `
+        MATCH (cat:Category {name: $category})<-[r_cat:CATEGORIZED_AS]-(t:Transaction)
+      `;
+      params.category = filters.category;
+    } else {
+      matchBase = `MATCH (t:Transaction)`;
     }
 
     const where = conditions.length ? `WHERE ${conditions.join(' AND ')}` : '';
-    const cypher = `${matchBase} ${where} ${TX_RETURN}`;
+    
+    const limitClause = filters.limit ? `SKIP $offset LIMIT $limit` : '';
+    params.limit = filters.limit ? int(filters.limit) : null;
+    params.offset = filters.offset ? int(filters.offset) : int(0);
+
+    const cypher = `
+      ${matchBase}
+      ${where}
+      WITH t
+      OPTIONAL MATCH (t)-[:FROM]->(fa:Account)
+      OPTIONAL MATCH (t)-[:TO]->(ta:Account)
+      OPTIONAL MATCH (t)-[:SPENT_AT]->(m:Merchant)
+      OPTIONAL MATCH (t)-[r_cat:CATEGORIZED_AS]->(cat:Category)
+      ${TX_RETURN}
+      ${limitClause}
+    `;
+
     const rows = await runQuery<{ tx: Transaction }>(cypher, params);
     return rows.map((r) => r.tx);
   }

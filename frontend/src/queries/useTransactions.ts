@@ -1,4 +1,10 @@
-import { useQuery, useMutation, useQueryClient, queryOptions } from '@tanstack/react-query'
+import {
+  useQuery,
+  useMutation,
+  useQueryClient,
+  queryOptions,
+  useInfiniteQuery,
+} from '@tanstack/react-query'
 import {
   getTransactions,
   getTransaction,
@@ -22,8 +28,27 @@ export const transactionDetailQueryOptions = (id: string) =>
     enabled: Boolean(id),
   })
 
+const PAGE_SIZE = 50
+
 export function useTransactions(filters: TransactionFilters = {}) {
   return useQuery(transactionsQueryOptions(filters))
+}
+
+export function useInfiniteTransactions(filters: TransactionFilters = {}) {
+  return useInfiniteQuery({
+    queryKey: transactionKeys.list(filters),
+    queryFn: ({ pageParam = 0 }) =>
+      getTransactions({
+        ...filters,
+        limit: PAGE_SIZE,
+        offset: pageParam as number,
+      }),
+    getNextPageParam: (lastPage, allPages) => {
+      if (lastPage.length < PAGE_SIZE) return undefined
+      return allPages.length * PAGE_SIZE
+    },
+    initialPageParam: 0,
+  })
 }
 
 export function useTransaction(id: string) {

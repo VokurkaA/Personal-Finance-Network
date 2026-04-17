@@ -8,6 +8,9 @@ function buildQuery(filters: TransactionFilters): string {
   if (filters.endDate) params.set('endDate', filters.endDate)
   if (filters.category) params.set('category', filters.category)
   if (filters.accountId) params.set('accountId', filters.accountId)
+  if (filters.search) params.set('search', filters.search)
+  if (filters.limit) params.set('limit', filters.limit.toString())
+  if (filters.offset) params.set('offset', filters.offset.toString())
   const qs = params.toString()
   return qs ? `?${qs}` : ''
 }

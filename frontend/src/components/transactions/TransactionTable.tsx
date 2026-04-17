@@ -9,8 +9,8 @@ import {
 } from '@tanstack/react-table'
 import { useVirtualizer } from '@tanstack/react-virtual'
 import { ArrowUp, ArrowDown, ArrowLeftRight } from 'lucide-react'
-import { useRef, useMemo } from 'react'
-import { useTransactions } from '../../queries/useTransactions'
+import { useRef, useMemo, useEffect } from 'react'
+import { useInfiniteTransactions } from '../../queries/useTransactions'
 import { transactionFiltersStore } from '../../store/transactionFiltersStore'
 import type { Transaction } from '../../types/entities'
 
@@ -21,7 +21,18 @@ function fmt(n: number) {
 export function TransactionTable() {
   'use no memo'
   const filters = useStore(transactionFiltersStore, (s) => s)
-  const { data: transactions = [], isLoading } = useTransactions(filters)
+  const {
+    data: infiniteData,
+    isLoading,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useInfiniteTransactions(filters)
+
+  const transactions = useMemo(
+    () => infiniteData?.pages.flatMap((page) => page) ?? [],
+    [infiniteData],
+  )
 
   const columns = useMemo<ColumnDef<Transaction>[]>(
     () => [
@@ -128,6 +139,17 @@ export function TransactionTable() {
   })
 
   const virtualRows = rowVirtualizer.getVirtualItems()
+
+  // Infinite scroll trigger
+  useEffect(() => {
+    const lastItem = virtualRows[virtualRows.length - 1]
+    if (!lastItem) return
+
+    if (lastItem.index >= rows.length - 5 && hasNextPage && !isFetchingNextPage) {
+      void fetchNextPage()
+    }
+  }, [virtualRows, hasNextPage, isFetchingNextPage, fetchNextPage, rows.length])
+
   const totalSize = rowVirtualizer.getTotalSize()
 
   const paddingTop = virtualRows.length > 0 ? virtualRows?.[0]?.start || 0 : 0
@@ -215,6 +237,13 @@ export function TransactionTable() {
                     {paddingBottom > 0 && (
                       <tr>
                         <td style={{ height: `${paddingBottom}px` }} />
+                      </tr>
+                    )}
+                    {isFetchingNextPage && (
+                      <tr>
+                        <td colSpan={6} className="p-4">
+                          <Skeleton className="h-10 w-full rounded" />
+                        </td>
                       </tr>
                     )}
                   </>
